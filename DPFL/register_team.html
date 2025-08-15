@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팀 등록 - DPFL</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .form-box {
+            background: #fff;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .form-box h1 {
+            margin-bottom: 2rem;
+        }
+        .form-box input, .form-box textarea {
+            width: 100%;
+            padding: 0.9rem;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            text-align: left;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .form-box textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        .form-box .btn {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .file-input-wrapper {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo">DPFL</a>
+                <ul class="nav-links">
+                    <li><a href="login.html">로그인</a></li>
+                    <li><a href="team_ranking.html">팀 순위</a></li>
+                    <li><a href="register_player.html">선수 등록</a></li>
+                    <li><a href="register_team.html">팀 등록</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="form-container">
+        <div class="form-box">
+            <h1>팀 등록</h1>
+            <form id="team-register-form">
+                <input type="text" id="team-name" placeholder="팀 이름" required>
+                <textarea id="team-description" placeholder="팀 설명" required></textarea>
+                <div class="file-input-wrapper">
+                    <label for="team-icon">팀 아이콘 업로드</label>
+                    <input type="file" id="team-icon" accept="image/*">
+                </div>
+                <button type="submit" class="btn">팀 등록</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-popup">
+            <p id="customAlertMessage"></p>
+            <button id="customAlertClose">확인</button>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
