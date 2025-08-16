@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPFL 팀 순위</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo">DPFL</a>
+                <ul class="nav-links">
+                    <li><a href="login.html">로그인</a></li>
+                    <li><a href="team_ranking.html">팀 순위</a></li>
+                    <li><a href="register_player.html">선수 등록</a></li>
+                    <li><a href="register_team.html">팀 등록</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="padding-top: 80px;">
+        <section class="ranking-section">
+            <div class="container">
+                <h2>현재 팀 순위</h2>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>팀</th>
+                            <th>경기수</th>
+                            <th>승점</th>
+                            <th>승</th>
+                            <th>무</th>
+                            <th>패</th>
+                            <th>득점</th>
+                            <th>실점</th>
+                            <th>득실</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-body">
+                        <!-- Firebase 데이터가 여기에 동적으로 추가됩니다. -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 DPS Team. All rights reserved.</p>
+    </footer>
+
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-popup">
+            <p id="customAlertMessage"></p>
+            <button id="customAlertClose">확인</button>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
