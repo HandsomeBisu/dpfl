@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팀 정보 - DPFL</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .team-header {
+            text-align: center;
+            padding: 3rem 1rem;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #e5e5ea;
+        }
+        .team-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        .team-header h1 {
+            margin-bottom: 0.5rem;
+        }
+        .team-header p {
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .team-members {
+            padding: 2rem 0;
+        }
+        .team-members h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .members-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .member-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+        .member-card h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+        .member-card p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo">DPFL</a>
+                <ul class="nav-links"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="padding-top: 80px;" class="fade-in">
+        <div id="team-info-container"></div>
+        <div class="team-members container">
+            <h2>팀 멤버</h2>
+            <div id="members-list" class="members-list"></div>
+        </div>
+    </main>
+
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-popup">
+            <p id="customAlertMessage"></p>
+            <button id="customAlertClose">확인</button>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

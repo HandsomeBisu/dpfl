@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팀 관리 - DPFL</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo">DPFL</a>
+                <ul class="nav-links"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="padding-top: 80px;" class="fade-in">
+        <div class="container">
+            <div id="team-management-header" style="margin-bottom: 2rem;">
+                <!-- Team name will be loaded here -->
+            </div>
+
+            <div class="management-grid">
+                <!-- 팀 정보 수정 -->
+                <div class="management-card">
+                    <h3>팀 정보</h3>
+                    <div id="team-info-display">
+                        <!-- Team info loaded here -->
+                    </div>
+                    <a href="#" id="edit-team-info-link" class="btn" style="width: 100%; margin-top: 1rem; text-align: center; box-sizing: border-box;">정보 수정</a>
+                </div>
+
+                <!-- 멤버 관리 -->
+                <div class="management-card">
+                    <h3>멤버 관리</h3>
+                    <div id="team-members-list">
+                        <!-- Team members loaded here -->
+                    </div>
+                </div>
+
+                <!-- 선수 영입 -->
+                <div class="management-card">
+                    <h3>선수 영입</h3>
+                    <p style="font-size: 0.9rem; color: #666;">현재 소속이 없는 선수만 영입할 수 있습니다.</p>
+                    <div id="free-agents-list">
+                        <!-- Free agent players loaded here -->
+                    </div>
+                </div>
+
+                <!-- 스쿼드 관리 -->
+                <div class="management-card" style="grid-column: 1 / -1;">
+                    <h3>스쿼드 관리 (드래그 & 드롭)</h3>
+                    <div class="squad-maker">
+                        <div class="pitch">
+                            <div class="pitch-line center-line"></div>
+                            <div class="pitch-line center-circle"></div>
+                            <div class="pitch-line penalty-box top"></div>
+                            <div class="pitch-line penalty-box bottom"></div>
+                            <div class="position-row">
+                                <div class="position-slot" data-position="fw1">FW</div>
+                                <div class="position-slot" data-position="fw2">FW</div>
+                                <div class="position-slot" data-position="fw3">FW</div>
+                            </div>
+                            <div class="position-row">
+                                <div class="position-slot" data-position="mf1">MF</div>
+                                <div class="position-slot" data-position="mf2">MF</div>
+                                <div class="position-slot" data-position="mf3">MF</div>
+                            </div>
+                            <div class="position-row">
+                                <div class="position-slot" data-position="df1">DF</div>
+                                <div class="position-slot" data-position="df2">DF</div>
+                                <div class="position-slot" data-position="df3">DF</div>
+                                <div class="position-slot" data-position="df4">DF</div>
+                            </div>
+                            <div class="position-row">
+                                <div class="position-slot" data-position="gk">GK</div>
+                            </div>
+                        </div>
+                        <div id="bench-list" class="bench"></div>
+                    </div>
+                    <button id="save-squad-btn" class="btn" style="width: 100%; margin-top: 1rem;">스쿼드 저장</button>
+                </div>
+
+                <!-- 위험 구역 -->
+                <div class="management-card danger-zone">
+                    <h3>위험 구역</h3>
+                    <p>팀을 삭제하면 복구할 수 없습니다. 소속된 모든 선수는 '무소속' 상태가 됩니다.</p>
+                    <button id="delete-team-btn" class="btn btn-danger" style="width: 100%;">팀 삭제</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-popup">
+            <p id="customAlertMessage"></p>
+            <div class="custom-alert-buttons">
+                <button id="customAlertCancel" class="btn btn-secondary">취소</button>
+                <button id="customAlertConfirm" class="btn">확인</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
