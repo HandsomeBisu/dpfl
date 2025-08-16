@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지 - DPFL</title>
+    <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <nav class="top-nav">
             <div class="nav-container">
-                <a href="index.html" class="logo">DPFL</a>
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
                 <ul class="nav-links"></ul>
             </div>
         </nav>
@@ -18,8 +19,8 @@
 
     <main style="padding-top: 80px;" class="fade-in">
         <div class="container">
-            <h2>마이페이지</h2>
-            
+            <!-- 유저 환영 메시지가 여기에 표시됩니다. -->
+            <h2 id="user-greeting" style="margin-bottom: 2rem; font-weight: 700;"></h2>
             <section class="mypage-section">
                 <h3>내 선수 프로필</h3>
                 <div id="my-player-profile">
@@ -28,8 +29,7 @@
             </section>
 
             <section class="mypage-section">
-                <h3>내가 관리
-하는 팀</h3>
+                <h3>내가 관리하는 팀</h3>
                 <div id="my-managed-teams">
                     <!-- Managed teams loaded here -->
                 </div>
@@ -43,6 +43,6 @@
             <button id="customAlertClose">확인</button>
         </div>
     </div>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

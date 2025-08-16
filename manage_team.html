@@ -11,7 +11,7 @@
     <header>
         <nav class="top-nav">
             <div class="nav-container">
-                <a href="index.html" class="logo">DPFL</a>
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
                 <ul class="nav-links"></ul>
             </div>
         </nav>
@@ -26,11 +26,13 @@
             <div class="management-grid">
                 <!-- 팀 정보 수정 -->
                 <div class="management-card">
-                    <h3>팀 정보</h3>
+                    <div class="card-header">
+                        <h3>팀 정보</h3>
+                        <a href="#" id="edit-team-info-link" class="btn-edit">정보 수정</a>
+                    </div>
                     <div id="team-info-display">
                         <!-- Team info loaded here -->
                     </div>
-                    <a href="#" id="edit-team-info-link" class="btn" style="width: 100%; margin-top: 1rem; text-align: center; box-sizing: border-box;">정보 수정</a>
                 </div>
 
                 <!-- 멤버 관리 -->
@@ -53,35 +55,40 @@
                 <!-- 스쿼드 관리 -->
                 <div class="management-card" style="grid-column: 1 / -1;">
                     <h3>스쿼드 관리 (드래그 & 드롭)</h3>
-                    <div class="squad-maker">
-                        <div class="pitch">
-                            <div class="pitch-line center-line"></div>
-                            <div class="pitch-line center-circle"></div>
-                            <div class="pitch-line penalty-box top"></div>
-                            <div class="pitch-line penalty-box bottom"></div>
-                            <div class="position-row">
-                                <div class="position-slot" data-position="fw1">FW</div>
-                                <div class="position-slot" data-position="fw2">FW</div>
-                                <div class="position-slot" data-position="fw3">FW</div>
-                            </div>
-                            <div class="position-row">
-                                <div class="position-slot" data-position="mf1">MF</div>
-                                <div class="position-slot" data-position="mf2">MF</div>
-                                <div class="position-slot" data-position="mf3">MF</div>
-                            </div>
-                            <div class="position-row">
-                                <div class="position-slot" data-position="df1">DF</div>
-                                <div class="position-slot" data-position="df2">DF</div>
-                                <div class="position-slot" data-position="df3">DF</div>
-                                <div class="position-slot" data-position="df4">DF</div>
-                            </div>
-                            <div class="position-row">
-                                <div class="position-slot" data-position="gk">GK</div>
-                            </div>
+                    <div class="squad-maker-container">
+                    <div class="pitch">
+                        <!-- Pitch lines -->
+                        <div class="line middle"></div>
+                        <div class="line center-circle"></div>
+                        <div class="line penalty-box-top"></div>
+                        <div class="line goal-area-top"></div>
+                        <div class="line penalty-box-bottom"></div>
+                        <div class="line goal-area-bottom"></div>
+
+                        <!-- Player Positions (Futsal 1-2-1-2 Formation) -->
+                        <div class="position-row forwards">
+                            <div class="position-slot" data-position="lf">LF</div>
+                            <div class="position-slot" data-position="rf">RF</div>
                         </div>
-                        <div id="bench-list" class="bench"></div>
+                        <div class="position-row midfielders">
+                            <div class="position-slot" data-position="cm">PIVO</div>
+                        </div>
+                        <div class="position-row defenders">
+                            <div class="position-slot" data-position="ld">ALA</div>
+                            <div class="position-slot" data-position="rd">ALA</div>
+                        </div>
+                        <div class="position-row goalkeeper">
+                            <div class="position-slot" data-position="gk">GOLEIRO</div>
+                        </div>
                     </div>
-                    <button id="save-squad-btn" class="btn" style="width: 100%; margin-top: 1rem;">스쿼드 저장</button>
+                    <div class="bench-area">
+                        <h4>BENCH</h4>
+                        <div id="bench-list" class="bench">
+                            <!-- Bench players will be loaded here -->
+                        </div>
+                        <button id="save-squad-btn" class="btn btn-save-squad">스쿼드 저장</button>
+                    </div>
+                </div>
                 </div>
 
                 <!-- 위험 구역 -->
@@ -103,6 +110,6 @@
             </div>
         </div>
     </div>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>팀 등록 - DPFL</title>
+    <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <style>
         .form-container {
@@ -53,7 +54,7 @@
     <header>
         <nav class="top-nav">
             <div class="nav-container">
-                <a href="index.html" class="logo">DPFL</a>
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
                 <ul class="nav-links">
                     <li><a href="login.html">로그인</a></li>
                     <li><a href="team_ranking.html">팀 순위</a></li>
@@ -81,9 +82,12 @@
     <div class="custom-alert-overlay" id="customAlert">
         <div class="custom-alert-popup">
             <p id="customAlertMessage"></p>
-            <button id="customAlertClose">확인</button>
+            <div class="custom-alert-buttons">
+                <button id="customAlertCancel" class="btn btn-secondary">취소</button>
+                <button id="customAlertConfirm" class="btn">확인</button>
+            </div>
         </div>
     </div>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

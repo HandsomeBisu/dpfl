@@ -42,6 +42,13 @@ a {
     font-size: 1.5rem;
     font-weight: 700;
     color: #1c1c1e;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 60px;
+    width: auto;
 }
 
 .nav-links {
@@ -82,6 +89,13 @@ a {
     letter-spacing: -2px;
 }
 
+.hero-logo {
+    max-width: 80%;
+    height: auto;
+    max-height: 200px; /* Adjust as needed */
+    margin-bottom: 1rem;
+}
+
 .hero-content p {
     font-size: 1.5rem;
     color: #888;
@@ -89,7 +103,7 @@ a {
 }
 
 .hero-buttons {
-    margin-top: 2.5rem;
+    margin-top: 1.5rem;
     display: flex;
     gap: 1rem;
 }
@@ -138,7 +152,7 @@ a {
     height: 24px;
     border-left: 2px solid #888;
     border-bottom: 2px solid #888;
-    transform: rotate(-45deg);
+    transform: rotate(-0deg);
 }
 
 @keyframes bounce {
@@ -195,6 +209,14 @@ a {
 
 .ranking-table td:first-child {
     font-weight: bold;
+}
+
+.team-icon-small {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
 }
 
 /* Footer */
@@ -373,3 +395,310 @@ a {
     border: 2px solid #ff3b30;
 }
 .danger-zone h3 { color: #ff3b30; }
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem; /* This replaces the margin-bottom on the h3 */
+}
+
+.card-header h3 {
+    margin: 0; /* Remove default margin from h3 */
+    border: none;
+    padding: 0;
+}
+
+.btn-edit {
+    background-color: #f0f0f0;
+    color: #555;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.btn-edit:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-1px);
+}
+
+.btn-save-squad {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-save-squad:hover {
+    background-color: #005ecb;
+}
+
+.btn-save-squad:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-recruit, .btn-release {
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+}
+
+.btn-recruit {
+    background-color: #e8f5e9; /* light green */
+    color: #2e7d32; /* dark green */
+}
+
+.btn-recruit:hover {
+    background-color: #c8e6c9;
+    transform: translateY(-1px);
+}
+
+.btn-release {
+    background-color: #ffebee;
+    color: #c62828;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.btn-release:hover {
+    background-color: #ffcdd2;
+    transform: translateY(-1px);
+}
+
+/* --- Squad Maker Styles --- */
+.squad-maker-container {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.pitch {
+    flex: 3;
+    position: relative;
+    background: #53a053;
+    background-image: radial-gradient(circle at center, #60b460, #498d49);
+    border: 2px solid #fff;
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 600px;
+    overflow: hidden;
+}
+
+.line {
+    position: absolute;
+    border-color: rgba(255, 255, 255, 0.4);
+    border-style: solid;
+}
+
+.line.middle {
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-width: 1px 0 0 0;
+}
+
+.line.center-circle {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-width: 2px;
+    border-radius: 50%;
+}
+
+.line.penalty-box-top {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 80px;
+    border-width: 0 2px 2px 2px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.line.penalty-box-bottom {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 120px;
+    border-width: 2px 2px 0 2px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.position-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    z-index: 1;
+}
+
+.position-slot {
+    width: 80px;
+    height: 60px;
+    border: 2px dashed rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.position-slot.sortable-ghost {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.player-chip {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.player-chip-photo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ccc;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #fff;
+}
+
+.player-chip-name {
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 600;
+    margin-top: 4px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70px;
+}
+
+/* Adjustments for chips inside the bench */
+.bench .player-chip {
+    flex-direction: row;
+    justify-content: flex-start;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 8px;
+    height: auto;
+    width: auto;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.bench .player-chip-name {
+    color: #333;
+    text-shadow: none;
+    margin-top: 0;
+    margin-left: 8px;
+}
+
+.bench .player-chip-photo {
+    border-color: #ddd;
+}
+
+.bench-area {
+    flex: 1;
+    min-width: 200px;
+}
+
+.bench-area h4 {
+    text-align: center;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.bench {
+    background-color: #e5e5ea;
+    border-radius: 12px;
+    padding: 1rem;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* --- Form Pages (Login, Signup, etc.) --- */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.form-box {
+    background: #fff;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.form-box h1 {
+    margin-bottom: 2rem;
+}
+
+.form-box input,
+.form-box textarea {
+    width: 100%;
+    padding: 0.9rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    text-align: left;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.form-box .btn {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.form-box .switch-link {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}

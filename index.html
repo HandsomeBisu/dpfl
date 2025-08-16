@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DPFL</title>
+    <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <nav class="top-nav">
             <div class="nav-container">
-                <a href="index.html" class="logo">DPFL</a>
-                <ul class="nav-links">
-                    <li><a href="login.html">로그인</a></li>
-                    <li><a href="team_ranking.html">팀 순위</a></li>
-                    <li><a href="register_player.html">선수 등록</a></li>
-                    <li><a href="register_team.html">팀 등록</a></li>
-                </ul>
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
+                <ul class="nav-links"></ul>
             </div>
         </nav>
     </header>
@@ -24,8 +20,8 @@
     <main>
         <section class="hero">
             <div class="hero-content">
-                <h1>DPFL</h1>
-                <h2>DongPyeong Football League</h2>
+                <img src="logo.png" alt="DPFL Logo" class="hero-logo">
+                <h2>DongPyeong Futsal League</h2>
                 <div class="hero-buttons">
                     <a href="register_team.html" class="btn">팀 등록하기</a>
                     <a href="register_player.html" class="btn">선수 등록하기</a>
@@ -64,15 +60,19 @@
 
     <footer class="footer">
         <p>&copy; 2025 DPS Team. All rights reserved.</p>
+        <p>DPS는 Don't Play Solo의 약자입니다.</p>
         <p><a href="admin.html" class="admin-link">관리자 페이지</a></p>
     </footer>
 
     <div class="custom-alert-overlay" id="customAlert">
         <div class="custom-alert-popup">
             <p id="customAlertMessage"></p>
-            <button id="customAlertClose">확인</button>
+            <div class="custom-alert-buttons">
+                <button id="customAlertCancel" class="btn btn-secondary">취소</button>
+                <button id="customAlertConfirm" class="btn">확인</button>
+            </div>
         </div>
     </div>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

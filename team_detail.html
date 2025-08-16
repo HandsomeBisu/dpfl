@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .team-header {
-            text-align: center;
             padding: 3rem 1rem;
             background-color: #f9f9f9;
             border-bottom: 1px solid #e5e5ea;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .team-icon {
             width: 120px;
@@ -48,6 +50,20 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.07);
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .member-photo, .member-photo-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            background-color: #e5e5ea;
+        }
+        .member-info {
+            text-align: center;
         }
         .member-card h3 {
             margin-top: 0;
@@ -58,13 +74,63 @@
             color: #666;
             font-size: 0.9rem;
         }
+
+        #team-details-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .detail-card {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        .detail-card h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #e5e5ea;
+            padding-bottom: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        #squad-display {
+            /* Using styles from squad maker for consistency */
+            min-height: 500px;
+        }
+
+        .members-list-small .member-card {
+            flex-direction: row;
+            text-align: left;
+            padding: 0.75rem;
+            gap: 1rem;
+        }
+
+        .members-list-small .member-photo, .members-list-small .member-photo-placeholder {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 0;
+        }
+
+        #leader-info p {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            #team-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <nav class="top-nav">
             <div class="nav-container">
-                <a href="index.html" class="logo">DPFL</a>
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
                 <ul class="nav-links"></ul>
             </div>
         </nav>
@@ -72,18 +138,31 @@
 
     <main style="padding-top: 80px;" class="fade-in">
         <div id="team-info-container"></div>
-        <div class="team-members container">
-            <h2>팀 멤버</h2>
-            <div id="members-list" class="members-list"></div>
+        <div class="container">
+            <div id="team-details-grid">
+                <div id="squad-display-card" class="detail-card">
+                    <h2>Squad</h2>
+                    <div id="squad-display"></div>
+                </div>
+                <div class="detail-card">
+                    <h2>Team Leader</h2>
+                    <div id="leader-info"></div>
+                    <h2 style="margin-top: 2rem;">Members</h2>
+                    <div id="members-list" class="members-list-small"></div>
+                </div>
+            </div>
         </div>
     </main>
 
     <div class="custom-alert-overlay" id="customAlert">
         <div class="custom-alert-popup">
             <p id="customAlertMessage"></p>
-            <button id="customAlertClose">확인</button>
+            <div class="custom-alert-buttons">
+                <button id="customAlertCancel" class="btn btn-secondary">취소</button>
+                <button id="customAlertConfirm" class="btn">확인</button>
+            </div>
         </div>
     </div>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
