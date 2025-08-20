@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경기 일정 - DPFL</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .schedule-header {
+            text-align: center;
+            padding: 2rem 1rem;
+            background-color: #f9f9f9;
+            margin-bottom: 2rem;
+        }
+        #schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .match-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .match-teams {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        .team-display {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .team-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #e5e5ea;
+        }
+        .vs-divider {
+            color: #888;
+        }
+        .match-datetime {
+            text-align: right;
+            color: #555;
+        }
+        .match-datetime .date {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .match-datetime .time {
+            font-size: 1rem;
+        }
+        @media (max-width: 768px) {
+            .match-card {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+            .match-teams {
+                font-size: 1.2rem;
+                gap: 1rem;
+            }
+            .team-icon {
+                width: 40px;
+                height: 40px;
+            }
+            .match-datetime {
+                text-align: center;
+                margin-top: 1rem;
+                border-top: 1px solid #f0f0f0;
+                padding-top: 1rem;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
+                <ul class="nav-links"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="padding-top: 80px;" class="fade-in">
+        <div class="container">
+            <div class="schedule-header">
+                <h1>경기 일정</h1>
+                <p>예정된 경기 목록입니다.</p>
+            </div>
+            <div id="schedule-list">
+                <!-- Scheduled matches will be populated by JS -->
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

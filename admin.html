@@ -83,8 +83,31 @@
             </div>
 
             <div class="admin-section">
+                <h3>경기 일정 등록</h3>
+                <form id="schedule-match-form">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="schedule-match-date">경기 날짜 및 시간</label>
+                        <input type="datetime-local" id="schedule-match-date" required style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: end; margin-bottom: 1rem;">
+                        <div>
+                            <label for="schedule-home-team-select">홈 팀</label>
+                            <select id="schedule-home-team-select" required style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;"></select>
+                        </div>
+                        <div style="text-align: center; font-size: 1.2rem; font-weight: bold;">VS</div>
+                        <div style="text-align: right;">
+                            <label for="schedule-away-team-select">원정 팀</label>
+                            <select id="schedule-away-team-select" required style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;"></select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">일정 등록</button>
+                </form>
+            </div>
+
+            <div class="admin-section">
                 <h3>경기 결과 관리</h3>
                 <form id="match-management-form" onsubmit="return false;">
+                    <input type="date" id="match-date" required style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 1rem;">
                     <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: end; margin-bottom: 1rem;">
                         <div>
                             <label for="home-team-select" style="display: block; margin-bottom: 0.5rem;">홈 팀</label>
@@ -102,6 +125,24 @@
                     </div>
                     <button type="button" id="apply-result-btn" class="btn" style="width: 100%;">결과 반영</button>
                 </form>
+            </div>
+
+        <div class="admin-section">
+                <h3>등록된 경기 목록</h3>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>홈 팀</th>
+                            <th>점수</th>
+                            <th>어웨이 팀</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matches-list-body">
+                        <!-- Match list will be populated here by admin.js -->
+                    </tbody>
+                </table>
             </div>
 
         </div>
@@ -146,6 +187,64 @@
                     <label for="editTeamIcon">새 아이콘 (선택)</label>
                     <input type="file" id="editTeamIcon" accept="image/*" style="width: 100%;">
                 </div>
+                <button type="submit" class="btn">저장</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Match Edit Modal -->
+    <div id="adminMatchEditModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" aria-label="닫기">&times;</button>
+            <h3>경기 정보 수정</h3>
+            <form id="adminEditMatchForm">
+                <input type="hidden" id="editMatchId">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="editMatchDate">날짜</label>
+                    <input type="date" id="editMatchDate" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                    <p id="editHomeTeamName" style="text-align: center; font-weight: bold;"></p>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="number" id="editHomeScore" min="0" required style="width: 60px; padding: 8px; border-radius: 5px; border: 1px solid #ccc; text-align: center;">
+                        <span>:</span>
+                        <input type="number" id="editAwayScore" min="0" required style="width: 60px; padding: 8px; border-radius: 5px; border: 1px solid #ccc; text-align: center;">
+                    </div>
+                    <p id="editAwayTeamName" style="text-align: center; font-weight: bold;"></p>
+                </div>
+
+                <h4>득점자 관리</h4>
+                <div id="scorers-management-section">
+                    <!-- Scorer input fields will be added here -->
+                </div>
+                <button type="button" id="add-scorer-btn" class="btn btn-secondary" style="margin-bottom: 1rem;">득점자 추가</button>
+
+                <h4 style="margin-top: 2rem;">도움 기록 관리</h4>
+                <div id="assists-management-section">
+                    <!-- Assist input fields will be added here -->
+                </div>
+                <button type="button" id="add-assist-btn" class="btn btn-secondary" style="margin-bottom: 1rem;">도움 기록 추가</button>
+
+                <hr style="margin: 2rem 0;">
+
+                <h3>경기 리포트 작성</h3>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="editMatchMVP">Man of the Match (MVP)</label>
+                    <select id="editMatchMVP" class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;"></select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="editMatchSummary">경기 요약</label>
+                    <textarea id="editMatchSummary" class="form-control" rows="4" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;"></textarea>
+                </div>
+
+                <h4 style="margin-top: 2rem;">경고/퇴장 관리</h4>
+                <div id="cards-management-section">
+                    <!-- Card input fields will be added here -->
+                </div>
+                <button type="button" id="add-card-btn" class="btn btn-secondary" style="margin-bottom: 1rem;">경고/퇴장 추가</button>
+
                 <button type="submit" class="btn">저장</button>
             </form>
         </div>

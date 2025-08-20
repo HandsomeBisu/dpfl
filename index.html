@@ -32,30 +32,88 @@
             </div>
         </section>
 
-        <section id="ranking" class="ranking-section">
-            <div class="container">
-                <h2>현재 팀 순위</h2>
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>순위</th>
-                            <th>팀</th>
-                            <th>경기수</th>
-                            <th>승점</th>
-                            <th>승</th>
-                            <th>무</th>
-                            <th>패</th>
-                            <th>득점</th>
-                            <th>실점</th>
-                            <th>득실</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ranking-body">
-                        <!-- Firebase 데이터가 여기에 동적으로 추가됩니다. -->
-                    </tbody>
-                </table>
-            </div>
+        
+
         </section>
+
+        <div class="container" id="main-content-container">
+            <div class="content-tabs">
+                <button class="tab-btn active" data-target="recent-matches-content">최근 경기</button>
+                <button class="tab-btn" data-target="team-ranking-content">팀 순위</button>
+                <button class="tab-btn" data-target="player-ranking-content">개인 순위</button>
+                <button class="tab-btn" data-target="schedule-content">경기 일정</button>
+            </div>
+
+            <div id="content-sections">
+                <section id="recent-matches-content" class="content-section active">
+                    <h2>최근 경기 결과</h2>
+                    <div id="recent-matches-container" class="recent-matches-container">
+                        <!-- Match cards will be populated here -->
+                    </div>
+                </section>
+
+                <section id="team-ranking-content" class="content-section">
+                    <h2>현재 팀 순위</h2>
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>팀</th>
+                                <th>경기수</th>
+                                <th>승점</th>
+                                <th>승</th>
+                                <th>무</th>
+                                <th>패</th>
+                                <th>득점</th>
+                                <th>실점</th>
+                                <th>득실</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-body">
+                            <!-- Team ranking data will be populated here -->
+                        </tbody>
+                    </table>
+                </section>
+
+                <section id="player-ranking-content" class="content-section">
+                    <h2>개인 득점 순위</h2>
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>선수</th>
+                                <th>소속팀</th>
+                                <th>득점</th>
+                            </tr>
+                        </thead>
+                        <tbody id="player-ranking-body">
+                            <!-- Player goal ranking data will be populated here -->
+                        </tbody>
+                    </table>
+                    <h2 style="margin-top: 2rem;">개인 도움 순위</h2>
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>선수</th>
+                                <th>소속팀</th>
+                                <th>도움</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assist-ranking-body">
+                            <!-- Player assist ranking data will be populated here -->
+                        </tbody>
+                    </table>
+                </section>
+
+                <section id="schedule-content" class="content-section">
+                    <h2>경기 일정</h2>
+                    <div id="schedule-container">
+                        <!-- Schedule will be populated here -->
+                    </div>
+                </section>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">

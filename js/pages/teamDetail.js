@@ -120,15 +120,20 @@ async function loadTeamDetails(teamId) {
             membersList.innerHTML = '<p class="no-data">소속된 멤버가 없습니다.</p>';
         } else {
             players.forEach(player => {
+                const memberLink = document.createElement('a');
+                memberLink.href = `player_detail.html?id=${player.id}`;
+                memberLink.className = 'member-card-link';
+
                 const memberCard = document.createElement('div');
                 memberCard.className = 'member-card';
                 memberCard.innerHTML = `
                     ${player.photoURL ? `<img src="${player.photoURL}" alt="${player.name}" class="member-photo">` : '<div class="member-photo-placeholder"></div>'}
                     <div class="member-info">
-                        <h3>${player.name}</h3>
+                        <h4>${player.name}</h4>
                     </div>
                 `;
-                membersList.appendChild(memberCard);
+                memberLink.appendChild(memberCard);
+                membersList.appendChild(memberLink);
             });
         }
 

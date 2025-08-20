@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>선수 정보 - DPFL</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .player-header {
+            padding: 3rem 1rem;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #e5e5ea;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .player-photo, .player-photo-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        .player-header h1 {
+            margin-bottom: 0.25rem;
+            font-size: 2.5rem;
+        }
+        .player-header .player-team-name {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        .player-header .player-team-name a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .player-header .player-team-name a:hover {
+            color: #007bff;
+        }
+
+        .player-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .detail-card {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        .detail-card h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #e5e5ea;
+            padding-bottom: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .player-info-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .player-info-list li:last-child {
+            border-bottom: none;
+        }
+        .player-info-list li strong {
+            color: #333;
+        }
+        .player-info-list li span {
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .player-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
+                <ul class="nav-links"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="padding-top: 80px;" class="fade-in">
+        <div id="player-header" class="player-header">
+            <!-- Player header content will be populated by JS -->
+        </div>
+        
+        <div class="container">
+            <div class="player-details-grid">
+                <div class="detail-card">
+                    <h2>선수 정보</h2>
+                    <ul id="player-info-list" class="player-info-list">
+                        <!-- Player info will be populated by JS -->
+                    </ul>
+                </div>
+                <div class="detail-card">
+                    <h2>개인 기록</h2>
+                    <ul id="player-stats-list" class="player-info-list">
+                        <!-- Player stats will be populated by JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-popup">
+            <p id="customAlertMessage"></p>
+            <div class="custom-alert-buttons">
+                <button id="customAlertCancel" class="btn btn-secondary">취소</button>
+                <button id="customAlertConfirm" class="btn">확인</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

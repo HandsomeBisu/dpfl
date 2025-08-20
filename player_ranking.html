@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPFL 개인 순위</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
+                <ul class="nav-links"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="padding-top: 80px;" class="fade-in">
+        <section class="ranking-section">
+            <div class="container">
+                <h2>개인 득점 순위</h2>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>선수</th>
+                            <th>소속팀</th>
+                            <th>득점</th>
+                        </tr>
+                    </thead>
+                    <tbody id="player-ranking-body">
+                        <!-- Player ranking data will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="ranking-section" style="padding-top: 2rem;">
+            <div class="container">
+                <h2>개인 도움 순위</h2>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>선수</th>
+                            <th>소속팀</th>
+                            <th>도움</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assist-ranking-body">
+                        <!-- Assist ranking data will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 DPS Team. All rights reserved.</p>
+        <p><a href="admin.html" class="admin-link">관리자 페이지</a></p>
+    </footer>
+
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-popup">
+            <p id="customAlertMessage"></p>
+            <button id="customAlertClose">확인</button>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -23,7 +23,7 @@ function disablePlayerRegistrationForm(message, buttonText, buttonLink) {
         button.href = buttonLink;
         button.className = 'btn';
         button.textContent = buttonText;
-        button.style.cssText = 'margin-top: 1rem; display: block; text-decoration: none;';
+        button.style.cssText = 'margin-top: 1rem; display: inline-block; text-decoration: none;';
         formBox.appendChild(button);
     }
 }

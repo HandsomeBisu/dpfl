@@ -8,6 +8,8 @@ import { initAdminPage } from "../pages/admin.js";
 import { initHomePage } from "../pages/home.js";
 import { initTeamDetailPage } from "../pages/teamDetail.js";
 import { initTeamRegisterPage } from "../pages/teamRegister.js";
+import { initPlayerRankingPage } from "../pages/playerRanking.js";
+import { initMatchReportPage } from "../pages/matchReport.js";
 
 const protectedRoutes = [
     'mypage.html',
@@ -25,8 +27,8 @@ function updateNav(user) {
     if (user) {
         navLinks.innerHTML = `
             <li><a href="team_ranking.html">팀 순위</a></li>
-            <li><a href="register_player.html">선수 등록</a></li>
-            <li><a href="register_team.html">팀 등록</a></li>
+            <li><a href="player_ranking.html">개인 순위</a></li>
+            <li><a href="schedule.html">경기 일정</a></li>
             <li><a href="mypage.html">마이페이지</a></li>
             <li><a href="#" id="logout-btn">로그아웃</a></li>
         `;
@@ -44,6 +46,8 @@ function updateNav(user) {
         navLinks.innerHTML = `
             <li><a href="login.html">로그인</a></li>
             <li><a href="team_ranking.html">팀 순위</a></li>
+            <li><a href="player_ranking.html">개인 순위</a></li>
+            <li><a href="schedule.html">경기 일정</a></li>
         `;
     }
 }
@@ -65,8 +69,16 @@ function router(user) {
     // Route to the correct page initializer
     switch (path) {
         case 'index.html':
-        case 'team_ranking.html':
             initHomePage();
+            break;
+        case 'team_ranking.html':
+            initHomePage(); // Assuming team ranking is also on the home page logic
+            break;
+        case 'player_ranking.html':
+            initPlayerRankingPage();
+            break;
+        case 'match_report.html':
+            initMatchReportPage();
             break;
         case 'register_player.html':
             initPlayerRegisterPage();

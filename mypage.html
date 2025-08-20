@@ -21,17 +21,41 @@
         <div class="container">
             <!-- 유저 환영 메시지가 여기에 표시됩니다. -->
             <h2 id="user-greeting" style="margin-bottom: 2rem; font-weight: 700;"></h2>
-            <section class="mypage-section">
-                <h3>내 선수 프로필</h3>
-                <div id="my-player-profile">
-                    <!-- Player profile loaded here -->
-                </div>
-            </section>
+
+            <div class="mypage-grid">
+                <section class="mypage-section card">
+                    <h3>내 선수 프로필</h3>
+                    <div id="my-player-profile">
+                        <!-- Player profile loaded here -->
+                    </div>
+                </section>
+
+                <section class="mypage-section card">
+                    <h3>나의 기록</h3>
+                    <div id="my-player-stats">
+                        <!-- Player stats (goals, assists) loaded here -->
+                    </div>
+                </section>
+
+                <section class="mypage-section card">
+                    <h3>소속팀</h3>
+                    <div id="my-teams">
+                        <!-- My teams loaded here -->
+                    </div>
+                </section>
+
+                <section class="mypage-section card">
+                    <h3>다음 경기</h3>
+                    <div id="my-next-match">
+                        <!-- Next match info loaded here -->
+                    </div>
+                </section>
+            </div>
 
             <section class="mypage-section">
-                <h3>내가 관리하는 팀</h3>
-                <div id="my-managed-teams">
-                    <!-- Managed teams loaded here -->
+                <h3>받은 팀 제안</h3>
+                <div id="recruitment-requests">
+                    <!-- Recruitment requests loaded here -->
                 </div>
             </section>
         </div>
@@ -40,7 +64,10 @@
     <div class="custom-alert-overlay" id="customAlert">
         <div class="custom-alert-popup">
             <p id="customAlertMessage"></p>
-            <button id="customAlertClose">확인</button>
+            <div class="custom-alert-buttons">
+                <button id="customAlertCancel" class="btn btn-secondary">취소</button>
+                <button id="customAlertConfirm" class="btn">확인</button>
+            </div>
         </div>
     </div>
     <script type="module" src="js/main.js"></script>
