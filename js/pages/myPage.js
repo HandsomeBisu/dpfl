@@ -1,6 +1,7 @@
-import { collection, query, where, getDocs, doc, getDoc, updateDoc, writeBatch, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, query, where, getDocs, doc, getDoc, updateDoc, writeBatch, orderBy, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { db } from "../firebase/config.js";
 import { showCustomAlert, showCustomConfirm } from "../ui/alerts.js";
+import { uploadToCloudinary } from "../cloudinary/upload.js";
 
 // --- Data Loading Functions ---
 
@@ -55,6 +56,7 @@ async function loadMyPageData(uid) {
     const containers = {
         greeting: document.getElementById('user-greeting'),
         profile: document.getElementById('my-player-profile'),
+        profileActions: document.getElementById('player-profile-actions'),
         stats: document.getElementById('my-player-stats'),
         team: document.getElementById('my-teams'),
         nextMatch: document.getElementById('my-next-match'),
@@ -96,6 +98,19 @@ async function loadMyPageData(uid) {
                         </div>
                     </div>
                 </div>`;
+        }
+
+        if (containers.profileActions) {
+            containers.profileActions.innerHTML = `
+                <form id="update-photo-form" data-player-id="${playerId}" style="margin-bottom: 1rem;">
+                    <label for="new-photo-input" style="display: block; margin-bottom: 0.5rem;">프로필 사진 변경</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="file" id="new-photo-input" accept="image/*" required style="flex-grow: 1;">
+                        <button type="submit" class="btn btn-small">저장</button>
+                    </div>
+                </form>
+                <button class="btn btn-danger delete-profile-btn" data-player-id="${playerId}">프로필 삭제</button>
+            `;
         }
 
         if (containers.stats) {
@@ -243,6 +258,39 @@ async function handleLeaveTeam(playerId) {
     }
 }
 
+async function handleDeleteProfile(playerId, uid) {
+    const confirmed = await showCustomConfirm("정말로 선수 프로필을 삭제하시겠습니까?");
+    if (!confirmed) return;
+
+    try {
+        // Check if the user is a team leader
+        const teamQuery = query(collection(db, "teams"), where("leader", "==", uid));
+        const teamSnapshot = await getDocs(teamQuery);
+        if (!teamSnapshot.empty) {
+            showCustomAlert("팀을 소유하고 있어 프로필을 삭제할 수 없습니다.");
+            return;
+        }
+
+        // Check if the player is in any team
+        const playerDocRef = doc(db, "players", playerId);
+        const playerDoc = await getDoc(playerDocRef);
+        if (playerDoc.exists() && playerDoc.data().teamId) {
+            showCustomAlert("팀에 소속되어 있어 프로필을 삭제할 수 없습니다.");
+            return;
+        }
+
+        // Delete the player document
+        await deleteDoc(doc(db, "players", playerId));
+
+        showCustomAlert("선수 프로필이 성공적으로 삭제되었습니다.");
+        window.location.href = 'index.html';
+
+    } catch (error) {
+        console.error("Error deleting player profile:", error);
+        showCustomAlert("프로필 삭제 중 오류가 발생했습니다.");
+    }
+}
+
 function setupMyPageListeners() {
     const container = document.querySelector('.container');
     container?.addEventListener('click', async (e) => {
@@ -260,6 +308,46 @@ function setupMyPageListeners() {
             handleRecruitmentAction(playerId, requestId, null, null, false);
         } else if (target.matches('.leave-team-btn')) {
             handleLeaveTeam(playerId);
+        } else if (target.matches('.delete-profile-btn')) {
+            handleDeleteProfile(playerId, window.currentUser.uid);
+        }
+
+        // Handle photo update form submission
+        const updatePhotoForm = document.getElementById('update-photo-form');
+        if (updatePhotoForm) {
+            updatePhotoForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitButton = e.target.querySelector('button[type="submit"]');
+                const fileInput = e.target.querySelector('#new-photo-input');
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    showCustomAlert('새로운 프로필 사진을 선택해주세요.');
+                    return;
+                }
+
+                submitButton.disabled = true;
+                submitButton.textContent = '저장 중...';
+
+                try {
+                    const newPhotoURL = await uploadToCloudinary(file);
+                    if (!newPhotoURL) {
+                        throw new Error('Cloudinary upload failed.');
+                    }
+
+                    const playerDocRef = doc(db, "players", playerId);
+                    await updateDoc(playerDocRef, { photoURL: newPhotoURL });
+
+                    showCustomAlert('프로필 사진이 성공적으로 변경되었습니다.');
+                    location.reload();
+
+                } catch (error) {
+                    console.error('Error updating profile photo:', error);
+                    showCustomAlert('사진 변경 중 오류가 발생했습니다.');
+                    submitButton.disabled = false;
+                    submitButton.textContent = '저장';
+                }
+            });
         }
     });
 }

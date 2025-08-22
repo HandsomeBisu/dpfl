@@ -970,3 +970,99 @@ a {
     margin-top: 1.5rem;
     font-size: 0.9rem;
 }
+
+/* --- Responsive Styles --- */
+.hamburger-menu {
+    display: none; /* Hide hamburger by default */
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+@media screen and (max-width: 768px) {
+    .nav-container {
+        padding: 1rem;
+    }
+
+    .nav-links {
+        display: none; /* Hide nav links by default on mobile */
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem 0;
+        border-bottom: 1px solid #e5e5ea;
+    }
+
+    .nav-links.active {
+        display: flex; /* Show when hamburger is clicked */
+    }
+
+    .nav-links li {
+        text-align: center;
+        padding: 1rem 0;
+    }
+
+    .hamburger-menu {
+        display: block; /* Show hamburger on mobile */
+    }
+
+    .hero-content h1 {
+        font-size: 4rem;
+    }
+    .hero-content p {
+        font-size: 1.2rem;
+    }
+
+    .content-tabs {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .tab-btn {
+        font-size: 1rem;
+        margin: 0 0.5rem;
+    }
+    .tab-btn.active::after {
+        bottom: -11px;
+    }
+
+    .container {
+        padding: 0.5rem; /* Reduce padding for smaller screens */
+    }
+
+    .mypage-grid, .management-grid {
+        grid-template-columns: 1fr; /* Stack items in a single column on mobile */
+        gap: 1rem;
+    }
+
+    .mypage-section, .management-card, .form-box {
+        padding: 1rem; /* Adjust section padding */
+    }
+
+    .ranking-table {
+        display: block; /* Allow table to scroll horizontally */
+        overflow-x: auto;
+        white-space: nowrap; /* Prevent text wrapping in table cells */
+    }
+    .ranking-table th, .ranking-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .schedule-item {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .squad-maker-container {
+        flex-direction: column;
+    }
+    .pitch {
+        min-height: 500px;
+    }
+}

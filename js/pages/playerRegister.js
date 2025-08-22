@@ -1,7 +1,7 @@
 import { collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
-import { auth, db, storage } from "../firebase/config.js";
+import { auth, db } from "../firebase/config.js";
 import { showCustomAlert } from "../ui/alerts.js";
+import { uploadToCloudinary } from "../cloudinary/upload.js";
 
 function disablePlayerRegistrationForm(message, buttonText, buttonLink) {
     const formBox = document.querySelector('.form-box');
@@ -59,12 +59,9 @@ function handlePlayerRegistrationForm() {
         submitButton.textContent = '요청 중...';
 
         try {
+            // The user object is now passed to initPlayerRegisterPage and checked there.
+            // No need for a separate check here.
             const user = auth.currentUser;
-            if (!user) {
-                showCustomAlert('로그인이 필요합니다.');
-                window.location.href = 'login.html';
-                return;
-            }
 
             const playerName = document.getElementById('player-name').value;
             const playerProfile = document.getElementById('player-profile').value;
@@ -72,9 +69,10 @@ function handlePlayerRegistrationForm() {
             let photoURL = null;
 
             if (photoFile) {
-                const storageRef = ref(storage, `player-photos/${Date.now()}_${photoFile.name}`);
-                await uploadBytes(storageRef, photoFile);
-                photoURL = await getDownloadURL(storageRef);
+                photoURL = await uploadToCloudinary(photoFile);
+                if (!photoURL) {
+                    throw new Error('Cloudinary image upload failed.');
+                }
             }
 
             await addDoc(collection(db, "pendingPlayers"), {
@@ -95,7 +93,11 @@ function handlePlayerRegistrationForm() {
     });
 }
 
-export function initPlayerRegisterPage() {
+export function initPlayerRegisterPage(user) {
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
     checkExistingPlayer();
     handlePlayerRegistrationForm();
 }

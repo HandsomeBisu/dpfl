@@ -61,7 +61,6 @@ function router(user) {
 
     // Handle protected routes
     if (protectedRoutes.includes(path) && !user) {
-        showCustomAlert("로그인 후 이용해주세요.");
         window.location.href = 'login.html';
         return;
     }
@@ -81,10 +80,10 @@ function router(user) {
             initMatchReportPage();
             break;
         case 'register_player.html':
-            initPlayerRegisterPage();
+            initPlayerRegisterPage(user);
             break;
         case 'register_team.html':
-            initTeamRegisterPage();
+            initTeamRegisterPage(user);
             break;
         case 'team_detail.html':
             initTeamDetailPage();

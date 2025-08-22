@@ -1,6 +1,5 @@
 import { doc, getDoc, updateDoc, collection, query, where, getDocs, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
-import { db, storage } from "../firebase/config.js";
+import { db } from "../firebase/config.js";
 import { showCustomAlert, showCustomConfirm } from "../ui/alerts.js";
 
 // --- Rendering Functions ---

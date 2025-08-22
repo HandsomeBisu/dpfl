@@ -31,14 +31,25 @@ async function loadPageModule() {
     }
 }
 
+function setupMobileNav() {
+    const hamburger = document.querySelector('.hamburger-menu');
+    const navLinks = document.getElementById('nav-links');
+
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Listen for authentication state changes to handle routing and nav updates
     listenAuthState();
 
+    // Setup mobile navigation
+    setupMobileNav();
+
     // Attach event listeners for login and signup forms if they exist on the page
     handleLogin();
     handleSignup();
-
-    // Load page-specific modules
-    loadPageModule();
 });

@@ -1,7 +1,7 @@
 import { addDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
-import { auth, db, storage } from "../firebase/config.js";
+import { auth, db } from "../firebase/config.js";
 import { showCustomAlert } from "../ui/alerts.js";
+import { uploadToCloudinary } from "../cloudinary/upload.js";
 
 function disableTeamRegistrationForm(message, buttonText, buttonLink) {
     const formBox = document.querySelector('.form-box');
@@ -28,8 +28,7 @@ function disableTeamRegistrationForm(message, buttonText, buttonLink) {
     }
 }
 
-async function checkExistingTeamAffiliation() {
-    const user = auth.currentUser;
+async function checkExistingTeamAffiliation(user) {
     if (!user) return;
 
     const uid = user.uid;
@@ -76,9 +75,10 @@ function handleTeamRegistrationForm() {
 
         try {
             if (iconFile) {
-                const storageRef = ref(storage, `team-icons/${Date.now()}_${iconFile.name}`);
-                await uploadBytes(storageRef, iconFile);
-                downloadURL = await getDownloadURL(storageRef);
+                downloadURL = await uploadToCloudinary(iconFile);
+                if (!downloadURL) {
+                    throw new Error('Cloudinary image upload failed.');
+                }
             }
             
             await addDoc(collection(db, "pendingTeams"), {
@@ -98,8 +98,13 @@ function handleTeamRegistrationForm() {
     });
 }
 
-export async function initTeamRegisterPage() {
-    const isAffiliated = await checkExistingTeamAffiliation();
+export async function initTeamRegisterPage(user) {
+    if (!user) {
+        // This case is handled by the router, but as a fallback:
+        window.location.href = 'login.html';
+        return;
+    }
+    const isAffiliated = await checkExistingTeamAffiliation(user);
     if (!isAffiliated) {
         handleTeamRegistrationForm();
     }
