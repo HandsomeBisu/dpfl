@@ -296,11 +296,11 @@ a {
 .ranking-table {
     width: 100%;
     border-collapse: collapse;
-    text-align: center;
-    background-color: #fff;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    border-radius: 12px;
+    margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    border-radius: 10px;
     overflow: hidden;
+    table-layout: fixed;
 }
 
 .ranking-table th, .ranking-table td {
@@ -987,7 +987,7 @@ a {
     }
 
     .nav-links {
-        display: none; /* Hide nav links by default on mobile */
+        /* display: none; Hide nav links by default on mobile */
         flex-direction: column;
         position: absolute;
         top: 100%;
@@ -997,10 +997,19 @@ a {
         backdrop-filter: blur(10px);
         padding: 1rem 0;
         border-bottom: 1px solid #e5e5ea;
+
+        /* Animation Properties */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
     }
 
     .nav-links.active {
-        display: flex; /* Show when hamburger is clicked */
+        /* display: flex; Show when hamburger is clicked */
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
     }
 
     .nav-links li {
@@ -1044,7 +1053,7 @@ a {
         padding: 1rem; /* Adjust section padding */
     }
 
-    .ranking-table {
+    #team-ranking-content .ranking-table {
         display: block; /* Allow table to scroll horizontally */
         overflow-x: auto;
         white-space: nowrap; /* Prevent text wrapping in table cells */

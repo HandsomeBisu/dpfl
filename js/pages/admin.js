@@ -813,7 +813,7 @@ function setupAdminEventListeners() {
 // --- Page Initializer ---
 export function initAdminPage() {
     const password = prompt("관리자 비밀번호를 입력하세요:");
-    if (password === "qh119357") { 
+    if (password === "wjstksqhdks") { 
         const adminContent = document.getElementById('admin-content');
         if(adminContent) adminContent.style.display = 'block';
         

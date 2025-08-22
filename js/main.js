@@ -49,6 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup mobile navigation
     setupMobileNav();
 
+    // Load page-specific module
+    loadPageModule();
+
     // Attach event listeners for login and signup forms if they exist on the page
     handleLogin();
     handleSignup();
