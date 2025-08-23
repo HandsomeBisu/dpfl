@@ -40,15 +40,20 @@ async function checkExistingTeamAffiliation(user) {
         getDocs(playerQuery)
     ]);
 
+    if (playerSnapshot.empty) {
+        disableTeamRegistrationForm("팀을 등록하려면 먼저 선수로 등록해야 합니다.", "선수 등록하기", "register_player.html");
+        return true; // Block registration
+    }
+
     if (!managedTeamsSnapshot.empty) {
-        disableTeamRegistrationForm("이미 관리하는 팀이 있습니다. 팀은 하나만 생성할 수 있습니다.", "마이페이지로 이동", "mypage.html");
+        disableTeamRegistrationForm("이미 관리하는 팀이 있습니다. 팀은 하나만 생성할 수 있습니다.", "마이페이지", "mypage.html");
         return true; // Is affiliated
     }
 
     if (!playerSnapshot.empty) {
         const player = playerSnapshot.docs[0].data();
         if (player.teamId) {
-            disableTeamRegistrationForm("이미 소속된 팀이 있습니다. 팀 생성은 소속이 없는 선수만 가능합니다.", "마이페이지로 이동", "mypage.html");
+            disableTeamRegistrationForm("이미 소속된 팀이 있습니다. 팀 생성은 소속이 없는 선수만 가능합니다.", "마이페이지", "mypage.html");
             return true; // Is affiliated
         }
     }

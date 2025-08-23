@@ -10,6 +10,7 @@ import { initTeamDetailPage } from "../pages/teamDetail.js";
 import { initTeamRegisterPage } from "../pages/teamRegister.js";
 import { initPlayerRankingPage } from "../pages/playerRanking.js";
 import { initMatchReportPage } from "../pages/matchReport.js";
+import { initRecruitPlayerPage } from "../pages/recruitPlayer.js";
 
 const protectedRoutes = [
     'mypage.html',
@@ -17,7 +18,8 @@ const protectedRoutes = [
     'edit_team.html',
     'edit_player.html',
     'register_player.html',
-    'register_team.html'
+    'register_team.html',
+    'recruit_player.html'
 ];
 
 function updateNav(user) {
@@ -102,6 +104,9 @@ function router(user) {
             break;
         case 'admin.html':
             initAdminPage();
+            break;
+        case 'recruit_player.html':
+            initRecruitPlayerPage(user);
             break;
         default:
             // 정의되지 않은 경로로 접근 시 콘솔에 로그를 남기거나 404 페이지로 리디렉션 할 수 있습니다.

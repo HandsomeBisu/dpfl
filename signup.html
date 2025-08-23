@@ -13,9 +13,26 @@
             <h1>회원가입</h1>
             <form id="signup-form">
                 <input type="text" id="username" placeholder="이름" required>
+                <p id="username-error" class="input-error"></p>
                 <input type="email" id="email" placeholder="이메일" required>
+                <p id="email-error" class="input-error"></p>
                 <input type="password" id="password" placeholder="비밀번호" required>
+                <p id="password-error" class="input-error"></p>
                 <input type="password" id="confirm-password" placeholder="비밀번호 확인" required>
+                <p id="confirm-password-error" class="input-error"></p>
+                <div class="form-check">
+                    <input type="checkbox" id="terms-agree" required>
+                    <label for="terms-agree">
+                        <a href="termsofuse.html" target="_blank">이용약관</a>에 동의합니다.
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="privacy-agree" required>
+                    <label for="privacy-agree">
+                        <a href="privacy.html" target="_blank">개인정보 처리방침</a>에 동의합니다.
+                    </label>
+                </div>
+                <p id="agree-error" class="input-error"></p>
                 <button type="submit" class="btn">회원가입</button>
             </form>
             <div class="switch-link">

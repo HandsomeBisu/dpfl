@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPFL 선수 영입</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
+                <button class="hamburger-menu" aria-label="Open navigation menu">&#9776;</button>
+                <ul class="nav-links" id="nav-links"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="padding-top: 80px;" class="fade-in">
+        <section class="container">
+            <h2>선수 영입</h2>
+            <div class="content-tabs">
+                <button class="tab-btn active" data-category="all">전체 선수</button>
+                <button class="tab-btn" data-category="unavailable">영입 불가능</button>
+                <button class="tab-btn" data-category="available">영입 가능</button>
+            </div>
+            <div id="player-recruit-list" class="management-grid">
+                <!-- Player list will be populated here by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 DPS Team. All rights reserved.</p>
+        <p><a href="admin.html" class="admin-link">관리자 페이지</a></p>
+    </footer>
+
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-popup">
+            <p id="customAlertMessage"></p>
+            <div class="custom-alert-buttons">
+                <button id="customAlertCancel" class="btn btn-secondary">취소</button>
+                <button id="customAlertConfirm" class="btn">확인</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 import { collection, query, getDocs, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { db } from "../firebase/config.js";
+import { initAllPlayersSection } from "./allPlayers.js"; // New import
 
 // --- Data Loading & Caching ---
 let teamsData = new Map();
@@ -232,7 +233,7 @@ function initContentTabs() {
     const contentSections = document.querySelectorAll('.content-section');
     const tabBtns = document.querySelectorAll('.tab-btn');
 
-    tabsContainer.addEventListener('click', (e) => {
+    tabsContainer.addEventListener('click', async (e) => { // Added async
         const clickedBtn = e.target.closest('.tab-btn');
         if (!clickedBtn) return;
 
@@ -248,6 +249,11 @@ function initContentTabs() {
                 section.classList.remove('active');
             }
         });
+
+        // Call specific init function for the active tab
+        if (targetId === 'all-players-content') {
+            await initAllPlayersSection();
+        }
     });
 }
 
@@ -262,4 +268,5 @@ export async function initHomePage() {
     renderTeamRankings();
     renderPlayerRankings();
     renderSchedule();
+    initAllPlayersSection(); // Call for initial load
 }

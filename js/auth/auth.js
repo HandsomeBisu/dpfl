@@ -1,12 +1,23 @@
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { auth, db } from "../firebase/config.js";
-import { showCustomAlert } from "../ui/alerts.js";
 
 const actionCodeSettings = {
     url: window.location.origin + '/login.html',
     handleCodeInApp: true
 };
+
+function showInputError(fieldId, message) {
+    const errorElement = document.getElementById(`${fieldId}-error`);
+    if (errorElement) {
+        errorElement.textContent = message;
+    }
+}
+
+function clearInputErrors() {
+    const errorElements = document.querySelectorAll('.input-error');
+    errorElements.forEach(el => el.textContent = '');
+}
 
 export function handleSignup() {
     const signupForm = document.getElementById('signup-form');
@@ -16,6 +27,7 @@ export function handleSignup() {
 
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        clearInputErrors();
         submitButton.disabled = true;
         submitButton.textContent = '가입 중...';
 
@@ -23,9 +35,27 @@ export function handleSignup() {
         const email = signupForm.email.value;
         const password = signupForm.password.value;
         const confirmPassword = signupForm['confirm-password'].value;
+        const termsAgree = signupForm['terms-agree'].checked;
+        const privacyAgree = signupForm['privacy-agree'].checked;
+
+        let hasError = false;
+
+        if (!username) {
+            showInputError('username', '이름을 입력해주세요.');
+            hasError = true;
+        }
 
         if (password !== confirmPassword) {
-            showCustomAlert('비밀번호가 일치하지 않습니다.');
+            showInputError('confirm-password', '비밀번호가 일치하지 않습니다.');
+            hasError = true;
+        }
+
+        if (!termsAgree || !privacyAgree) {
+            showInputError('agree', '이용약관과 개인정보 처리방침에 모두 동의해야 합니다.');
+            hasError = true;
+        }
+
+        if (hasError) {
             submitButton.disabled = false;
             submitButton.textContent = '회원가입';
             return;
@@ -43,15 +73,15 @@ export function handleSignup() {
             window.location.href = 'verify-email.html';
         } catch (error) {
             console.error("Signup Error:", error);
-            let message = "회원가입에 실패했습니다. ";
             if (error.code === 'auth/email-already-in-use') {
-                message += '이미 사용 중인 이메일입니다.';
+                showInputError('email', '이미 사용 중인 이메일입니다.');
             } else if (error.code === 'auth/weak-password') {
-                message += '비밀번호는 6자 이상이어야 합니다.';
+                showInputError('password', '비밀번호는 6자 이상이어야 합니다.');
+            } else if (error.code === 'auth/invalid-email') {
+                showInputError('email', '유효하지 않은 이메일 형식입니다.');
             } else {
-                message += '네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.';
+                showInputError('confirm-password', '회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
             }
-            showCustomAlert(message);
             submitButton.disabled = false;
             submitButton.textContent = '회원가입';
         }
@@ -66,6 +96,7 @@ export function handleLogin() {
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        clearInputErrors();
         submitButton.disabled = true;
         submitButton.textContent = '로그인 중...';
 
@@ -75,13 +106,21 @@ export function handleLogin() {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             if (!userCredential.user.emailVerified) {
                 await signOut(auth);
-                showCustomAlert("이메일 인증이 필요합니다. 메일함을 확인해주세요.");
+                showInputError('password', '이메일 인증이 필요합니다. 메일함을 확인해주세요.');
+                submitButton.disabled = false;
+                submitButton.textContent = '로그인';
             } else {
                 window.location.href = 'index.html';
             }
         } catch (error) {
             console.error("Login Error:", error);
-            showCustomAlert("로그인 실패: 이메일 또는 비밀번호가 올바르지 않습니다.");
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                showInputError('password', '이메일 또는 비밀번호가 올바르지 않습니다.');
+            } else if (error.code === 'auth/invalid-email') {
+                showInputError('email', '유효하지 않은 이메일 형식입니다.');
+            } else {
+                showInputError('password', '이메일 또는 비밀번호가 올바른지 확인하세요.');
+            }
             submitButton.disabled = false;
             submitButton.textContent = '로그인';
         }

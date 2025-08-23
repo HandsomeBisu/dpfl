@@ -60,57 +60,7 @@ function renderTeamMembers(players, leaderUid) {
     });
 }
 
-async function renderFreeAgents(teamId, leaderUid, players) {
-    const freeAgentsListEl = document.getElementById('free-agents-list');
-    if (!freeAgentsListEl) return;
 
-    if (players.length >= 8) {
-        freeAgentsListEl.innerHTML = '<p class="no-data">팀 인원이 최대 8명에 도달하여 더 이상 선수를 영입할 수 없습니다.</p>';
-        return;
-    }
-
-    freeAgentsListEl.innerHTML = '<p class="no-data">로딩 중...</p>';
-
-    // 1. Get all free agents
-    const playersQuery = query(collection(db, "players"), where("teamId", "==", null));
-    const playersSnapshot = await getDocs(playersQuery);
-    
-    const freeAgents = [];
-    playersSnapshot.forEach(doc => {
-        const player = { id: doc.id, ...doc.data() };
-        if (player.uid !== leaderUid) {
-            freeAgents.push(player);
-        }
-    });
-
-    if (freeAgents.length === 0) {
-        freeAgentsListEl.innerHTML = '<p class="no-data">영입 가능한 선수가 없습니다.</p>';
-        return;
-    }
-
-    // 2. Get pending requests sent by THIS team
-    const requestsQuery = query(collection(db, "recruitmentRequests"), where("teamId", "==", teamId), where("status", "==", "pending"));
-    const requestsSnapshot = await getDocs(requestsQuery);
-    const pendingPlayerIds = requestsSnapshot.docs.map(doc => doc.data().playerId);
-
-    // 3. Render list
-    freeAgentsListEl.innerHTML = '';
-    freeAgents.forEach(player => {
-        const isPending = pendingPlayerIds.includes(player.id);
-        const item = document.createElement('div');
-        item.className = 'list-item';
-        item.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                ${player.photoURL ? `<img src="${player.photoURL}" alt="${player.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : '<div style="width: 40px; height: 40px; border-radius: 50%; background-color: #eee;"></div>'}
-                <span>${player.name}</span>
-            </div>
-            <button class="btn-recruit recruit-player-btn" data-player-id="${player.id}" ${isPending ? 'disabled' : ''}>
-                ${isPending ? '제안 보냄' : '영입 제안'}
-            </button>
-        `;
-        freeAgentsListEl.appendChild(item);
-    });
-}
 
 // --- Squad Maker ---
 function createPlayerChip(player) {
@@ -212,44 +162,12 @@ function setupTeamManagementListeners(team, user, players) {
                 initTeamManagementPage(user);
             }
         }
-        if (e.target.matches('.recruit-player-btn')) {
-            const recruitButton = e.target;
-            
-            if (players.length >= 8) {
-                showCustomAlert('팀 인원이 최대 8명에 도달하여 더 이상 선수를 영입할 수 없습니다.');
-                return;
-            }
-
-            const playerId = recruitButton.dataset.playerId;
-            const confirmed = await showCustomConfirm('이 선수에게 영입 제안을 보내시겠습니까?');
-            if (confirmed) {
-                try {
-                    const playersQuery = query(collection(db, "players"), where("teamId", "==", team.id));
-                    const playersSnapshot = await getDocs(playersQuery);
-                    if (playersSnapshot.size >= 8) {
-                        showCustomAlert('이미 팀 인원이 가득 찼습니다. 새로고침 후 다시 시도해주세요.');
-                        recruitButton.textContent = '영입 불가';
-                        recruitButton.disabled = true;
-                        return;
-                    }
-
-                    await addDoc(collection(db, "recruitmentRequests"), {
-                        teamId: team.id,
-                        teamName: team.name,
-                        playerId: playerId,
-                        status: 'pending',
-                        createdAt: new Date()
-                    });
-                    showCustomAlert('선수에게 영입 제안을 보냈습니다.');
-                    recruitButton.textContent = '제안 보냄';
-                    recruitButton.disabled = true;
-                } catch (error) {
-                    console.error("Error sending recruitment request:", error);
-                    showCustomAlert('영입 제안을 보내는 중 오류가 발생했습니다.');
-                }
-            }
-        }
     });
+
+    const recruitBtn = document.getElementById('recruit-player-btn');
+    if(recruitBtn) {
+        recruitBtn.href = `recruit_player.html?teamId=${team.id}`;
+    }
 
     document.getElementById('delete-team-btn')?.addEventListener('click', async () => {
         const confirmed = await showCustomConfirm(`정말로 '${team.name}' 팀을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`);
@@ -299,7 +217,6 @@ export async function initTeamManagementPage(user) {
     renderTeamManagementHeader(teamData);
     renderTeamInfo(teamData, leaderPlayer);
     renderTeamMembers(players, user.uid);
-    renderFreeAgents(teamData.id, user.uid, players);
     initializeSquadMaker(teamData, players);
     
     setupTeamManagementListeners(teamData, user, players);
