@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스쿼드 편집 - DPFL</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="nav-container">
+                <a href="index.html" class="logo"><img src="logo.png" alt="DPFL Logo"></a>
+                <button class="hamburger-menu" aria-label="Open navigation menu">&#9776;</button>
+                <ul class="nav-links" id="nav-links"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="padding-top: 80px;" class="fade-in">
+        <div class="container">
+            <h2 id="squad-edit-header">스쿼드 편집</h2>
+
+            <div class="squad-editor-container">
+                <div class="formation-selection">
+                    <h3>포메이션 선택</h3>
+                    <div class="custom-select-wrapper">
+                        <div id="custom-formation-select" class="custom-select">
+                            <div class="custom-select__trigger">
+                                <span id="selected-formation-text">1-2-1</span>
+                                <div class="arrow"></div>
+                            </div>
+                            <div class="custom-options">
+                                <span class="custom-option selected" data-value="1-2-1">1-2-1</span>
+                                <span class="custom-option" data-value="2-1-1">2-1-1</span>
+                                <span class="custom-option" data-value="1-1-2">1-1-2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="squad-maker-container">
+                    <div class="pitch">
+                        <!-- Player Positions will be rendered here based on formation -->
+                    </div>
+                    <div class="bench-area">
+                        <h4>벤치</h4>
+                        <div id="bench-list" class="bench">
+                            <!-- Bench players will be loaded here -->
+                        </div>
+                        <button id="save-squad-btn" class="btn btn-save-squad">스쿼드 저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-popup">
+            <p id="customAlertMessage"></p>
+            <div class="custom-alert-buttons">
+                <button id="customAlertCancel" class="btn btn-secondary">취소</button>
+                <button id="customAlertConfirm" class="btn">확인</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

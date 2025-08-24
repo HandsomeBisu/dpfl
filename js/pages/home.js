@@ -35,7 +35,7 @@ async function loadAllPlayers() {
 async function renderTeamRankings() {
     const rankingBody = document.getElementById('ranking-body');
     if (!rankingBody) return;
-    rankingBody.innerHTML = '<tr><td colspan="10">순위를 불러오는 중...</td></tr>';
+    rankingBody.innerHTML = '<tr><td colspan="11">순위를 불러오는 중...</td></tr>';
 
     try {
         const teamsQuery = query(collection(db, "teams"), orderBy("points", "desc"), orderBy("goalDifference", "desc"), orderBy("goalsFor", "desc"));
@@ -43,7 +43,7 @@ async function renderTeamRankings() {
 
         rankingBody.innerHTML = '';
         if (querySnapshot.empty) {
-            rankingBody.innerHTML = '<tr><td colspan="10" style="text-align: center;">등록된 팀이 없습니다.</td></tr>';
+            rankingBody.innerHTML = '<tr><td colspan="11" style="text-align: center;">등록된 팀이 없습니다.</td></tr>';
             return;
         }
 
@@ -53,9 +53,11 @@ async function renderTeamRankings() {
             const row = document.createElement('tr');
             row.classList.add('team-row');
             row.dataset.teamId = doc.id;
+            const iconUrl = team.iconUrl || 'logo.png';
 
             row.innerHTML = `
                 <td>${rank}</td>
+                <td><img src="${iconUrl}" alt="${team.name}" class="team-icon-ranking"></td>
                 <td class="team-name-cell">${team.name}</td>
                 <td>${team.matchesPlayed || 0}</td>
                 <td>${team.points || 0}</td>
@@ -78,7 +80,7 @@ async function renderTeamRankings() {
         });
     } catch (error) {
         console.error("Error fetching team rankings:", error);
-        rankingBody.innerHTML = '<tr><td colspan="10" style="text-align: center;">순위 로딩 실패</td></tr>';
+        rankingBody.innerHTML = '<tr><td colspan="11" style="text-align: center;">순위 로딩 실패</td></tr>';
     }
 }
 

@@ -13,6 +13,12 @@ function renderTeamInfo(team, leaderPlayer) {
     const infoEl = document.getElementById('team-info-display');
     if (!infoEl) return;
 
+    // Set current team icon
+    const currentTeamIconEl = document.getElementById('current-team-icon');
+    if (currentTeamIconEl && team.iconUrl) {
+        currentTeamIconEl.src = team.iconUrl;
+    }
+
     let leaderHtml = '<p>팀장 정보를 불러오는 중...</p>';
     if (leaderPlayer) {
         leaderHtml = `
@@ -28,7 +34,6 @@ function renderTeamInfo(team, leaderPlayer) {
     infoEl.innerHTML = `
         <p><strong>팀 이름:</strong> ${team.name}</p>
         <p><strong>팀 설명:</strong> ${team.description}</p>
-        ${team.iconUrl ? `<p><strong>아이콘:</strong></p><img src="${team.iconUrl}" alt="Team Icon" style="max-width: 100px; border-radius: 8px;">` : ''}
         <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; border-top: 1px solid #eee; padding-top: 1rem;">팀장</h4>
         ${leaderHtml}
     `;
@@ -60,93 +65,7 @@ function renderTeamMembers(players, leaderUid) {
     });
 }
 
-
-
-// --- Squad Maker ---
-function createPlayerChip(player) {
-    const chip = document.createElement('div');
-    chip.className = 'player-chip';
-    chip.dataset.playerId = player.id;
-
-    const photoDiv = document.createElement('div');
-    photoDiv.className = 'player-chip-photo';
-    if (player.photoURL) {
-        photoDiv.style.backgroundImage = `url(${player.photoURL})`;
-    }
-
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'player-chip-name';
-    nameSpan.textContent = player.name;
-
-    chip.appendChild(photoDiv);
-    chip.appendChild(nameSpan);
-
-    return chip;
-}
-
-async function initializeSquadMaker(team, players) {
-    const pitchSlots = document.querySelectorAll('.position-slot');
-    const benchList = document.getElementById('bench-list');
-    const saveBtn = document.getElementById('save-squad-btn');
-
-    if (!pitchSlots.length || !benchList || !saveBtn) return;
-
-    const savedSquad = team.squad || {};
-    const placedPlayerIds = Object.values(savedSquad);
-
-    pitchSlots.forEach(slot => slot.innerHTML = slot.dataset.position.toUpperCase());
-    benchList.innerHTML = '';
-
-    for (const position in savedSquad) {
-        const playerId = savedSquad[position];
-        const player = players.find(p => p.id === playerId);
-        if (player) {
-            const slot = document.querySelector(`.position-slot[data-position="${position}"]`);
-            if (slot) {
-                const playerChip = createPlayerChip(player);
-                slot.innerHTML = '';
-                slot.appendChild(playerChip);
-            }
-        }
-    }
-
-    const benchedPlayers = players.filter(p => !placedPlayerIds.includes(p.id));
-    benchedPlayers.forEach(player => {
-        const playerChip = createPlayerChip(player);
-        benchList.appendChild(playerChip);
-    });
-
-    const sortableOptions = { group: 'squad', animation: 150, ghostClass: 'sortable-ghost' };
-    if (window.sortableInstances) {
-        window.sortableInstances.forEach(instance => instance.destroy());
-    }
-    window.sortableInstances = [];
-    window.sortableInstances.push(new Sortable(benchList, sortableOptions));
-    pitchSlots.forEach(slot => { window.sortableInstances.push(new Sortable(slot, sortableOptions)); });
-
-    saveBtn.onclick = async () => {
-        saveBtn.disabled = true;
-        saveBtn.textContent = '저장 중...';
-        const newSquad = {};
-        pitchSlots.forEach(slot => {
-            const playerChip = slot.querySelector('.player-chip');
-            if (playerChip) {
-                newSquad[slot.dataset.position] = playerChip.dataset.playerId;
-            }
-        });
-
-        try {
-            await updateDoc(doc(db, "teams", team.id), { squad: newSquad });
-            showCustomAlert('스쿼드가 성공적으로 ��장되었습니다.');
-        } catch (error) {
-            console.error("Error saving squad:", error);
-            showCustomAlert('스쿼드 저장 중 오류가 발생했습니다.');
-        } finally {
-            saveBtn.disabled = false;
-            saveBtn.textContent = '스쿼드 저장';
-        }
-    };
-}
+// --- Squad Maker (Moved to edit_squad.html) ---
 
 // --- Event Listeners ---
 function setupTeamManagementListeners(team, user, players) {
@@ -169,6 +88,11 @@ function setupTeamManagementListeners(team, user, players) {
         recruitBtn.href = `recruit_player.html?teamId=${team.id}`;
     }
 
+    const editSquadBtn = document.getElementById('edit-squad-btn');
+    if(editSquadBtn) {
+        editSquadBtn.href = `edit_squad.html?id=${team.id}`;
+    }
+
     document.getElementById('delete-team-btn')?.addEventListener('click', async () => {
         const confirmed = await showCustomConfirm(`정말로 '${team.name}' 팀을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`);
         if (confirmed) {
@@ -183,7 +107,34 @@ function setupTeamManagementListeners(team, user, players) {
             window.location.href = 'mypage.html';
         }
     });
+
+    document.getElementById('upload-team-icon-btn')?.addEventListener('click', async () => {
+        const fileInput = document.getElementById('team-icon-upload');
+        if (fileInput.files.length === 0) {
+            showCustomAlert('업로드할 파일을 선택해주세요.');
+            return;
+        }
+
+        const file = fileInput.files[0];
+        showCustomAlert('아이콘을 업로드 중입니다. 잠시 기다려주세요...');
+
+        try {
+            const iconUrl = await uploadToCloudinary(file);
+            if (iconUrl) {
+                await updateDoc(doc(db, "teams", team.id), { iconUrl: iconUrl });
+                showCustomAlert('팀 아이콘이 성공적으로 변경되었습니다.');
+                initTeamManagementPage(user); // Re-render the page with the new icon
+            } else {
+                showCustomAlert('아이콘 업로드에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error("Error uploading team icon:", error);
+            showCustomAlert('아이콘 업로드 중 오류가 발생했습니다.');
+        }
+    });
 }
+
+import { uploadToCloudinary } from "../cloudinary/upload.js";
 
 // --- Page Initializer ---
 export async function initTeamManagementPage(user) {
@@ -217,7 +168,6 @@ export async function initTeamManagementPage(user) {
     renderTeamManagementHeader(teamData);
     renderTeamInfo(teamData, leaderPlayer);
     renderTeamMembers(players, user.uid);
-    initializeSquadMaker(teamData, players);
     
     setupTeamManagementListeners(teamData, user, players);
 }

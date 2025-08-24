@@ -50,7 +50,7 @@ function renderPlayers() {
 
         const photoHtml = player.photoURL
             ? `<img src="${player.photoURL}" alt="${player.name}" class="recruit-player-photo">`
-            : `<div class="recruit-player-photo-placeholder"></div>`;
+            : `<img src="logo.png" alt="${player.name}" class="recruit-player-photo">`;
 
         card.innerHTML = `
             <div class="card-header">

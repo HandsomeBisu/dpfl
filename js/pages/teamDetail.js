@@ -1,6 +1,27 @@
 import { doc, getDoc, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { db } from "../firebase/config.js";
 
+const FORMATIONS = {
+    "1-2-1": {
+        gk: ["GOLEIRO"],
+        def: ["FIXO"],
+        mid: ["ALA", "ALA"],
+        fwd: ["PIVO"]
+    },
+    "2-1-1": {
+        gk: ["GOLEIRO"],
+        def: ["FIXO", "FIXO"],
+        mid: ["ALA"],
+        fwd: ["PIVO"]
+    },
+    "1-1-2": {
+        gk: ["GOLEIRO"],
+        def: ["FIXO"],
+        mid: ["ALA"],
+        fwd: ["PIVO", "PIVO"]
+    }
+};
+
 // --- Rendering Functions ---
 
 function createPlayerChip(player) {
@@ -11,6 +32,8 @@ function createPlayerChip(player) {
     photoDiv.className = 'player-chip-photo';
     if (player && player.photoURL) {
         photoDiv.style.backgroundImage = `url(${player.photoURL})`;
+    } else {
+        photoDiv.style.backgroundImage = `url(logo.png)`;
     }
 
     const nameSpan = document.createElement('span');
@@ -23,29 +46,29 @@ function createPlayerChip(player) {
     return chip;
 }
 
-function renderReadOnlySquad(squadData, players, container) {
-    container.innerHTML = `
+function renderReadOnlySquad(formationKey, squadData, players, container) {
+    const effectiveFormationKey = formationKey && FORMATIONS[formationKey] ? formationKey : "1-2-1";
+    const formation = FORMATIONS[effectiveFormationKey];
+
+    let pitchHTML = `
         <div class="pitch">
             <div class="line middle"></div>
             <div class="line center-circle"></div>
             <div class="line penalty-box-top"></div>
             <div class="line penalty-box-bottom"></div>
-            <div class="position-row forwards">
-                <div class="position-slot" data-position="lf">LF</div>
-                <div class="position-slot" data-position="rf">RF</div>
-            </div>
-            <div class="position-row midfielders">
-                <div class="position-slot" data-position="cm">PIVO</div>
-            </div>
-            <div class="position-row defenders">
-                <div class="position-slot" data-position="ld">ALA</div>
-                <div class="position-slot" data-position="rd">ALA</div>
-            </div>
-            <div class="position-row goalkeeper">
-                <div class="position-slot" data-position="gk">GOLEIRO</div>
-            </div>
-        </div>
     `;
+
+    Object.keys(formation).reverse().forEach(line => {
+        pitchHTML += `<div class="position-row ${line}">`;
+        formation[line].forEach((pos, index) => {
+            const positionId = `${line}-${index}`;
+            pitchHTML += `<div class="position-slot" data-position="${positionId}">${pos}</div>`;
+        });
+        pitchHTML += `</div>`;
+    });
+
+    pitchHTML += `</div>`;
+    container.innerHTML = pitchHTML;
 
     for (const position in squadData) {
         const playerId = squadData[position];
@@ -105,7 +128,7 @@ async function loadTeamDetails(teamId) {
         if (leaderPlayerData) {
             leaderInfo.innerHTML = `
                 <div class="member-card">
-                    ${leaderPlayerData.photoURL ? `<img src="${leaderPlayerData.photoURL}" alt="${leaderPlayerData.name}" class="member-photo">` : '<div class="member-photo-placeholder"></div>'}
+                    ${leaderPlayerData.photoURL ? `<img src="${leaderPlayerData.photoURL}" alt="${leaderPlayerData.name}" class="member-photo">` : '<img src="logo.png" alt="Default Logo" class="member-photo">'}
                     <div class="member-info">
                         <h3>${leaderPlayerData.name}</h3>
                     </div>
@@ -127,7 +150,7 @@ async function loadTeamDetails(teamId) {
                 const memberCard = document.createElement('div');
                 memberCard.className = 'member-card';
                 memberCard.innerHTML = `
-                    ${player.photoURL ? `<img src="${player.photoURL}" alt="${player.name}" class="member-photo">` : '<div class="member-photo-placeholder"></div>'}
+                    ${player.photoURL ? `<img src="${player.photoURL}" alt="${player.name}" class="member-photo">` : '<img src="logo.png" alt="Default Logo" class="member-photo">'}
                     <div class="member-info">
                         <h4>${player.name}</h4>
                     </div>
@@ -137,7 +160,7 @@ async function loadTeamDetails(teamId) {
             });
         }
 
-        renderReadOnlySquad(team.squad || {}, players, squadDisplay);
+        renderReadOnlySquad(team.formation, team.squad || {}, players, squadDisplay);
 
     } catch (error) {
         console.error("Error loading team details:", error);

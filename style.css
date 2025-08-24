@@ -1,4 +1,24 @@
+/* --- Custom Ranking Table Styles -- */
+.ranking-table .team-name-cell {
+    text-align: left;
+}
+
+.team-icon-ranking {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
+    margin-right: 1rem;
+}
+
 /* General Styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     margin: 0;
@@ -780,6 +800,14 @@ a {
     justify-content: space-between;
     min-height: 600px;
     overflow: hidden;
+    min-width: 300px; /* Ensure pitch is visible on smaller screens */
+}
+
+.bench-area {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
 }
 
 .line {
@@ -1216,3 +1244,412 @@ a {
     text-decoration: underline;
 }
 
+/* --- Squad Editor Page Styles --- */
+.squad-editor-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+}
+
+.formation-selection {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.formation-selection h3 {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    color: #333;
+}
+
+/* --- Custom Select Dropdown --- */
+.custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+    user-select: none;
+    width: 150px;
+}
+
+.custom-select {
+    position: relative;
+}
+
+.custom-select__trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1c1c1e;
+    background-color: #f2f2f7;
+    border: 1px solid #e5e5ea;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.custom-select__trigger:hover {
+    border-color: #d1d1d6;
+}
+
+.custom-select.open .custom-select__trigger {
+    border-color: #007aff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
+}
+
+.custom-select__trigger .arrow {
+    position: relative;
+    height: 8px;
+    width: 8px;
+    border-left: 2px solid #555;
+    border-bottom: 2px solid #555;
+    transform: rotate(-45deg);
+    transition: transform 0.3s ease;
+}
+
+.custom-select.open .arrow {
+    transform: rotate(135deg);
+}
+
+.custom-options {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e5e5ea;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.custom-select.open .custom-options {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.custom-option {
+    display: block;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.custom-option:hover {
+    background-color: #f2f2f7;
+}
+
+.custom-option.selected {
+    background-color: #e5e5ea;
+    font-weight: 600;
+}
+
+.custom-option:first-of-type {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.custom-option:last-of-type {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* Re-using and adapting existing squad maker styles */
+.squad-maker-container {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center; /* Center content within the container */
+}
+
+.pitch {
+    flex: 3;
+    position: relative;
+    background: #53a053;
+    background-image: radial-gradient(circle at center, #60b460, #498d49);
+    border: 2px solid #fff;
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 600px;
+    overflow: hidden;
+    min-width: 300px; /* Ensure pitch is visible on smaller screens */
+}
+
+.line {
+    position: absolute;
+    border-color: rgba(255, 255, 255, 0.4);
+    border-style: solid;
+}
+
+.line.middle {
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-width: 1px 0 0 0;
+}
+
+.line.center-circle {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-width: 2px;
+    border-radius: 50%;
+}
+
+.line.penalty-box-top {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 80px;
+    border-width: 0 2px 2px 2px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.line.penalty-box-bottom {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 120px;
+    border-width: 2px 2px 0 2px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.position-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    z-index: 1;
+}
+
+.position-slot {
+    width: 80px;
+    height: 60px;
+    border: 2px dashed rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.position-slot.sortable-ghost {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.player-chip {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.player-chip-photo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ccc;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #fff;
+}
+
+.player-chip-name {
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 600;
+    margin-top: 4px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70px;
+}
+
+/* Adjustments for chips inside the bench */
+.bench .player-chip {
+    flex-direction: row;
+    justify-content: flex-start;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 8px;
+    height: auto;
+    width: auto;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.bench .player-chip-name {
+    color: #333;
+    text-shadow: none;
+    margin-top: 0;
+    margin-left: 8px;
+}
+
+.bench .player-chip-photo {
+    border-color: #ddd;
+}
+
+.bench-area {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.bench-area h4 {
+    text-align: center;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.bench {
+    background-color: #e5e5ea;
+    border-radius: 12px;
+    padding: 1rem;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-grow: 1; /* Allow bench to take available height */
+}
+
+@media screen and (max-width: 768px) {
+    .squad-editor-container {
+        padding: 1rem;
+    }
+    .squad-maker-container {
+        flex-direction: column;
+    }
+    .pitch {
+        min-height: 400px;
+        width: 100%;
+    }
+    .bench-area {
+        width: 100%;
+    }
+
+    .position-slot {
+        width: 65px;
+        height: 50px;
+    }
+
+    .player-chip-photo {
+        width: 30px;
+        height: 30px;
+    }
+
+    .player-chip-name {
+        font-size: 0.7rem;
+        max-width: 55px;
+    }
+}
+
+/* --- Player Selection Modal --- */
+.player-select-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.player-select-modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.player-select-modal-popup {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.player-select-modal-overlay.active .player-select-modal-popup {
+    transform: scale(1);
+}
+
+.player-select-modal-popup h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.player-select-list {
+    max-height: 60vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.player-select-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #f2f2f7;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.player-select-item:hover {
+    background-color: #e5e5ea;
+}
+
+.player-select-item .player-chip-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-right: 1rem;
+}
+
+.player-select-item .player-chip-name {
+    color: #1c1c1e;
+    font-weight: 600;
+    text-shadow: none;
+}

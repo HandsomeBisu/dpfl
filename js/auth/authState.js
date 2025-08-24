@@ -7,10 +7,12 @@ import { initPlayerRegisterPage } from "../pages/playerRegister.js";
 import { initAdminPage } from "../pages/admin.js";
 import { initHomePage } from "../pages/home.js";
 import { initTeamDetailPage } from "../pages/teamDetail.js";
+import { initPlayerDetailPage } from "../pages/playerDetail.js";
 import { initTeamRegisterPage } from "../pages/teamRegister.js";
 import { initPlayerRankingPage } from "../pages/playerRanking.js";
 import { initMatchReportPage } from "../pages/matchReport.js";
 import { initRecruitPlayerPage } from "../pages/recruitPlayer.js";
+import { initEditSquadPage } from "../pages/editSquad.js";
 
 const protectedRoutes = [
     'mypage.html',
@@ -19,7 +21,8 @@ const protectedRoutes = [
     'edit_player.html',
     'register_player.html',
     'register_team.html',
-    'recruit_player.html'
+    'recruit_player.html',
+    'edit_squad.html'
 ];
 
 function updateNav(user) {
@@ -90,6 +93,9 @@ function router(user) {
         case 'team_detail.html':
             initTeamDetailPage();
             break;
+        case 'player_detail.html':
+            initPlayerDetailPage();
+            break;
         case 'mypage.html':
             initMyPage(user);
             break;
@@ -107,6 +113,9 @@ function router(user) {
             break;
         case 'recruit_player.html':
             initRecruitPlayerPage(user);
+            break;
+        case 'edit_squad.html':
+            initEditSquadPage(user);
             break;
         default:
             // 정의되지 않은 경로로 접근 시 콘솔에 로그를 남기거나 404 페이지로 리디렉션 할 수 있습니다.

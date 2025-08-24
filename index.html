@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <script>
+        // 세션 스토리지에서 'hasWaited' 플래그를 확인합니다.
+        if (!sessionStorage.getItem('hasWaited')) {
+            // 플래그가 없으면 waiting.html로 리디렉션합니다.
+            window.location.href = '/waiting.html';
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DPFL</title>
@@ -60,6 +67,7 @@
                         <thead>
                             <tr>
                                 <th>순위</th>
+                                <th></th>
                                 <th>팀</th>
                                 <th>경기수</th>
                                 <th>승점</th>

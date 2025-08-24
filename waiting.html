@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대기 중...</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #007bff;
+            animation: spin 1s ease infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+        <div class="container">
+        <h1>과도한 트래픽 유발 방지를 위해 대기 중입니다.</h1>
+        <h2>곧 사이트로 이동됩니다.</h2>
+        <div class="spinner"></div>
+        <h3>※ 재접속 및 새로고침할 경우, 대기시간이 더 길어질 수 있습니다.</h3>
+        <small>사이트 운영을 무료로 유지하기 위한 조치입니다.<br>이 방법으로 최대 50%의 트래픽 사용량을 줄일 수 있습니다.</small>
+    </div>
+    <script>
+        // 세션 스토리지에 대기열 통과 플래그 설정
+        sessionStorage.setItem('hasWaited', 'true');
+
+        const minDelay = 5000; // 5 seconds
+        const maxDelay = 20000; // 20 seconds
+        const randomDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
+
+        setTimeout(() => {
+            window.location.href = '/index.html';
+        }, randomDelay);
+    </script>
+</body>
+</html>

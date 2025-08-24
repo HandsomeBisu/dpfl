@@ -10,7 +10,20 @@ async function fetchPlayerData(playerId) {
         return null;
     }
 
-    return playerSnap.data();
+    const playerData = playerSnap.data();
+    playerData.id = playerSnap.id;
+
+    if (playerData.teamId) {
+        const teamRef = doc(db, 'teams', playerData.teamId);
+        const teamSnap = await getDoc(teamRef);
+        if (teamSnap.exists()) {
+            playerData.teamName = teamSnap.data().name;
+        } else {
+            playerData.teamName = '알 수 없는 팀';
+        }
+    }
+
+    return playerData;
 }
 
 async function calculatePlayerStats(playerId) {
@@ -30,7 +43,7 @@ async function calculatePlayerStats(playerId) {
         if (matchData.scorers && Array.isArray(matchData.scorers)) {
             matchData.scorers.forEach(scorer => {
                 if (scorer.playerId === playerId) {
-                    stats.goals += scorer.goals;
+                    stats.goals += Number(scorer.goals) || 0;
                 }
             });
         }
@@ -86,9 +99,20 @@ function renderPlayerInfo(player) {
     `;
 }
 
+function renderPlayerStatsLoading() {
+    const statsList = document.getElementById('player-stats-list');
+    if (!statsList) return;
+    statsList.innerHTML = `<li>기록을 불러오는 중...</li>`;
+}
+
 function renderPlayerStats(stats) {
     const statsList = document.getElementById('player-stats-list');
     if (!statsList) return;
+
+    if (!stats) {
+        statsList.innerHTML = `<li>기록을 불러오는 데 실패했습니다.</li>`;
+        return;
+    }
 
     statsList.innerHTML = `
         <li><strong>득점</strong><span>${stats.goals}</span></li>
@@ -104,22 +128,42 @@ function displayPlayerNotFound() {
 }
 
 export async function initPlayerDetailPage() {
-    const params = new URLSearchParams(window.location.search);
-    const playerId = params.get('id');
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const playerId = params.get('id');
 
-    if (!playerId) {
-        displayPlayerNotFound();
-        return;
-    }
+        if (!playerId) {
+            displayPlayerNotFound();
+            return;
+        }
 
-    const playerData = await fetchPlayerData(playerId);
+        const playerData = await fetchPlayerData(playerId);
 
-    if (playerData) {
-        const playerStats = await calculatePlayerStats(playerId);
-        renderPlayerHeader(playerData);
-        renderPlayerInfo(playerData);
-        renderPlayerStats(playerStats);
-    } else {
-        displayPlayerNotFound();
+        if (playerData) {
+            // Render basic info immediately
+            renderPlayerHeader(playerData);
+            renderPlayerInfo(playerData);
+            
+            // Show loading state for stats
+            renderPlayerStatsLoading();
+
+            // Calculate and render stats asynchronously
+            try {
+                const playerStats = await calculatePlayerStats(playerId);
+                renderPlayerStats(playerStats);
+            } catch (error) {
+                console.error("Error calculating player stats:", error);
+                renderPlayerStats(null); // Render an error state
+            }
+
+        } else {
+            displayPlayerNotFound();
+        }
+    } catch (error) {
+        console.error("Failed to initialize player detail page:", error);
+        const mainContent = document.querySelector('main');
+        if (mainContent) {
+            mainContent.innerHTML = '<div class="container"><p style="text-align:center; padding: 3rem 0;">페이지를 불러오는 중 오류가 발생했습니다.</p></div>';
+        }
     }
 }
