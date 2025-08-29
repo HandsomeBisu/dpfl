@@ -302,6 +302,17 @@ a {
     margin: 0 1rem;
 }
 
+.practice-match-badge {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.75em;
+    font-weight: 700;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
 .match-card-team-icon {
     width: 60px;
     height: 60px;
@@ -415,6 +426,17 @@ a {
 }
 
 /* --- Match Report Page Styles --- */
+.practice-match-notice {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
 .report-text-block {
     background-color: #fff;
     padding: 2rem;

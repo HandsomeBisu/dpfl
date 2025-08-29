@@ -119,7 +119,7 @@ async function loadTeamDetails(teamId) {
         // 3. Render all components
         teamInfoContainer.innerHTML = `
             <div class="team-header">
-                ${team.iconUrl ? `<img src="${team.iconUrl}" alt="${team.name} Icon" class="team-icon">` : '<div class="team-icon"></div>'}
+                <img src="${team.iconUrl || 'logo.png'}" alt="${team.name} Icon" class="team-icon">
                 <h1>${team.name}</h1>
                 <p>${team.description}</p>
             </div>

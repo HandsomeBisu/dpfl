@@ -34,23 +34,44 @@ async function renderReport(matchId) {
 
     const match = matchSnap.data();
 
+    // Fetch team data to get icons
+    const homeTeamRef = doc(db, "teams", match.homeTeamId);
+    const awayTeamRef = doc(db, "teams", match.awayTeamId);
+    const [homeTeamSnap, awayTeamSnap] = await Promise.all([getDoc(homeTeamRef), getDoc(awayTeamRef)]);
+
+    const homeTeamIcon = homeTeamSnap.exists() && homeTeamSnap.data().iconUrl ? homeTeamSnap.data().iconUrl : 'logo.png';
+    const awayTeamIcon = awayTeamSnap.exists() && awayTeamSnap.data().iconUrl ? awayTeamSnap.data().iconUrl : 'logo.png';
+
+
     // Render Header
     const headerEl = document.getElementById('report-header');
     if (headerEl) {
         headerEl.innerHTML = `
             <div class="match-card" style="margin-bottom: 2rem;">
-                 <div class="match-date">${match.date}</div>
+                 <div class="match-date">${match.date} - ${match.matchType === 'real' ? '실제 경기' : '연습 경기'}</div>
                  <div class="match-teams">
                      <div class="team-display">
+                         <img src="${homeTeamIcon}" alt="${match.homeTeamName}" class="team-icon-ranking">
                          <div class="team-name">${match.homeTeamName}</div>
                      </div>
                      <div class="score">${match.homeScore} : ${match.awayScore}</div>
                      <div class="team-display">
+                         <img src="${awayTeamIcon}" alt="${match.awayTeamName}" class="team-icon-ranking">
                          <div class="team-name">${match.awayTeamName}</div>
                      </div>
                  </div>
              </div>
         `;
+    }
+
+    // Display practice match notice if applicable
+    const practiceNoticeEl = document.getElementById('practice-match-notice');
+    if (practiceNoticeEl) {
+        if (match.matchType === 'practice') {
+            practiceNoticeEl.style.display = 'block';
+        } else {
+            practiceNoticeEl.style.display = 'none';
+        }
     }
 
     // Render Summary Tab

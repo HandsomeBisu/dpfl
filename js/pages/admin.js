@@ -109,6 +109,7 @@ function loadMatches() {
                 <td>${match.homeTeamName}</td>
                 <td>${match.homeScore !== null ? match.homeScore : ''} : ${match.awayScore !== null ? match.awayScore : ''}</td>
                 <td>${match.awayTeamName}</td>
+                <td>${match.matchType === 'real' ? '실제 경기' : '연습 경기'}</td>
                 <td>
                     <button class="btn-small edit-match-btn" data-id="${matchId}">수정</button>
                     <button class="btn-small btn-danger delete-match-btn" data-id="${matchId}">삭제</button>
@@ -302,6 +303,7 @@ async function openMatchEditModal(matchId) {
 
     document.getElementById('editMatchId').value = matchId;
     document.getElementById('editMatchDate').value = match.date;
+    document.getElementById('editMatchType').value = match.matchType || 'real';
     document.getElementById('editHomeTeamName').textContent = match.homeTeamName;
     document.getElementById('editAwayTeamName').textContent = match.awayTeamName;
     document.getElementById('editHomeScore').value = match.homeScore;
@@ -501,57 +503,58 @@ async function deleteMatch(matchId) {
             }
 
             const match = matchDoc.data();
-            const homeTeamRef = doc(db, 'teams', match.homeTeamId);
-            const awayTeamRef = doc(db, 'teams', match.awayTeamId);
 
-            const homeTeamDoc = await transaction.get(homeTeamRef);
-            const awayTeamDoc = await transaction.get(awayTeamRef);
+            if (match.matchType === 'real') {
+                const homeTeamRef = doc(db, 'teams', match.homeTeamId);
+                const awayTeamRef = doc(db, 'teams', match.awayTeamId);
 
-            if (!homeTeamDoc.exists() || !awayTeamDoc.exists()) {
-                transaction.delete(matchRef);
-                return;
+                const homeTeamDoc = await transaction.get(homeTeamRef);
+                const awayTeamDoc = await transaction.get(awayTeamRef);
+
+                if (homeTeamDoc.exists() && awayTeamDoc.exists()) {
+                    const homeData = homeTeamDoc.data();
+                    const awayData = awayTeamDoc.data();
+
+                    const homeUpdate = {
+                        matchesPlayed: (homeData.matchesPlayed || 0) - 1,
+                        goalsFor: (homeData.goalsFor || 0) - match.homeScore,
+                        goalsAgainst: (homeData.goalsAgainst || 0) - match.awayScore,
+                        points: (homeData.points || 0)
+                    };
+                    const awayUpdate = {
+                        matchesPlayed: (awayData.matchesPlayed || 0) - 1,
+                        goalsFor: (awayData.goalsFor || 0) - match.awayScore,
+                        goalsAgainst: (awayData.goalsAgainst || 0) - match.homeScore,
+                        points: (awayData.points || 0)
+                    };
+
+                    if (match.homeScore > match.awayScore) {
+                        homeUpdate.wins = (homeData.wins || 0) - 1;
+                        homeUpdate.points -= 3;
+                        awayUpdate.losses = (awayData.losses || 0) - 1;
+                    } else if (match.awayScore > match.homeScore) {
+                        awayUpdate.wins = (awayData.wins || 0) - 1;
+                        awayUpdate.points -= 3;
+                        homeUpdate.losses = (homeData.losses || 0) - 1;
+                    } else {
+                        homeUpdate.draws = (homeData.draws || 0) - 1;
+                        homeUpdate.points -= 1;
+                        awayUpdate.draws = (awayData.draws || 0) - 1;
+                        awayUpdate.points -= 1;
+                    }
+
+                    // Ensure points do not go below zero
+                    if (homeUpdate.points < 0) homeUpdate.points = 0;
+                    if (awayUpdate.points < 0) awayUpdate.points = 0;
+
+                    homeUpdate.goalDifference = homeUpdate.goalsFor - homeUpdate.goalsAgainst;
+                    awayUpdate.goalDifference = awayUpdate.goalsFor - awayUpdate.goalsAgainst;
+
+                    transaction.update(homeTeamRef, homeUpdate);
+                    transaction.update(awayTeamRef, awayUpdate);
+                }
             }
-            
-            const homeData = homeTeamDoc.data();
-            const awayData = awayTeamDoc.data();
 
-            const homeUpdate = {
-                matchesPlayed: (homeData.matchesPlayed || 0) - 1,
-                goalsFor: (homeData.goalsFor || 0) - match.homeScore,
-                goalsAgainst: (homeData.goalsAgainst || 0) - match.awayScore,
-                points: (homeData.points || 0)
-            };
-            const awayUpdate = {
-                matchesPlayed: (awayData.matchesPlayed || 0) - 1,
-                goalsFor: (awayData.goalsFor || 0) - match.awayScore,
-                goalsAgainst: (awayData.goalsAgainst || 0) - match.homeScore,
-                points: (awayData.points || 0)
-            };
-
-            if (match.homeScore > match.awayScore) {
-                homeUpdate.wins = (homeData.wins || 0) - 1;
-                homeUpdate.points -= 3;
-                awayUpdate.losses = (awayData.losses || 0) - 1;
-            } else if (match.awayScore > match.homeScore) {
-                awayUpdate.wins = (awayData.wins || 0) - 1;
-                awayUpdate.points -= 3;
-                homeUpdate.losses = (homeData.losses || 0) - 1;
-            } else {
-                homeUpdate.draws = (homeData.draws || 0) - 1;
-                homeUpdate.points -= 1;
-                awayUpdate.draws = (awayData.draws || 0) - 1;
-                awayUpdate.points -= 1;
-            }
-
-            // Ensure points do not go below zero
-            if (homeUpdate.points < 0) homeUpdate.points = 0;
-            if (awayUpdate.points < 0) awayUpdate.points = 0;
-
-            homeUpdate.goalDifference = homeUpdate.goalsFor - homeUpdate.goalsAgainst;
-            awayUpdate.goalDifference = awayUpdate.goalsFor - awayUpdate.goalsAgainst;
-
-            transaction.update(homeTeamRef, homeUpdate);
-            transaction.update(awayTeamRef, awayUpdate);
             transaction.delete(matchRef);
         });
 
@@ -567,8 +570,12 @@ async function saveMatchChanges(e) {
     e.preventDefault();
     const matchId = document.getElementById('editMatchId').value;
     
+    // Note: Changing matchType between 'real' and 'practice' after a match is completed
+    // may lead to inconsistent team statistics. This functionality does not currently
+    // recalculate team stats based on this change.
     const updatedData = {
         date: document.getElementById('editMatchDate').value,
+        matchType: document.getElementById('editMatchType').value,
         homeScore: parseInt(document.getElementById('editHomeScore').value, 10),
         awayScore: parseInt(document.getElementById('editAwayScore').value, 10),
         report_mvp: document.getElementById('editMatchMVP').value,
@@ -626,6 +633,7 @@ async function applyMatchResult() {
     const homeScoreStr = document.getElementById('home-score').value;
     const awayScoreStr = document.getElementById('away-score').value;
     const matchDate = document.getElementById('match-date').value;
+    const matchType = document.getElementById('match-type').value;
 
     if (!homeTeamId || !awayTeamId || homeTeamId === awayTeamId || homeScoreStr === '' || awayScoreStr === '' || !matchDate) {
         showCustomAlert('모든 필드를 올바르게 선택하고 입력해주세요.');
@@ -645,51 +653,53 @@ async function applyMatchResult() {
     applyBtn.textContent = '반영 중...';
 
     try {
-        await runTransaction(db, async (transaction) => {
-            const homeTeamRef = doc(db, "teams", homeTeamId);
-            const awayTeamRef = doc(db, "teams", awayTeamId);
-            const homeTeamDoc = await transaction.get(homeTeamRef);
-            const awayTeamDoc = await transaction.get(awayTeamRef);
+        if (matchType === 'real') {
+            await runTransaction(db, async (transaction) => {
+                const homeTeamRef = doc(db, "teams", homeTeamId);
+                const awayTeamRef = doc(db, "teams", awayTeamId);
+                const homeTeamDoc = await transaction.get(homeTeamRef);
+                const awayTeamDoc = await transaction.get(awayTeamRef);
 
-            if (!homeTeamDoc.exists() || !awayTeamDoc.exists()) throw new Error("팀 정보를 찾을 수 없습니다.");
+                if (!homeTeamDoc.exists() || !awayTeamDoc.exists()) throw new Error("팀 정보를 찾을 수 없습니다.");
 
-            const homeData = homeTeamDoc.data();
-            const awayData = awayTeamDoc.data();
+                const homeData = homeTeamDoc.data();
+                const awayData = awayTeamDoc.data();
 
-            const homeUpdate = {
-                matchesPlayed: (homeData.matchesPlayed || 0) + 1,
-                goalsFor: (homeData.goalsFor || 0) + homeScore,
-                goalsAgainst: (homeData.goalsAgainst || 0) + awayScore,
-                points: (homeData.points || 0)
-            };
-            const awayUpdate = {
-                matchesPlayed: (awayData.matchesPlayed || 0) + 1,
-                goalsFor: (awayData.goalsFor || 0) + awayScore,
-                goalsAgainst: (awayData.goalsAgainst || 0) + homeScore,
-                points: (awayData.points || 0)
-            };
+                const homeUpdate = {
+                    matchesPlayed: (homeData.matchesPlayed || 0) + 1,
+                    goalsFor: (homeData.goalsFor || 0) + homeScore,
+                    goalsAgainst: (homeData.goalsAgainst || 0) + awayScore,
+                    points: (homeData.points || 0)
+                };
+                const awayUpdate = {
+                    matchesPlayed: (awayData.matchesPlayed || 0) + 1,
+                    goalsFor: (awayData.goalsFor || 0) + awayScore,
+                    goalsAgainst: (awayData.goalsAgainst || 0) + homeScore,
+                    points: (awayData.points || 0)
+                };
 
-            if (homeScore > awayScore) {
-                homeUpdate.wins = (homeData.wins || 0) + 1;
-                homeUpdate.points += 3;
-                awayUpdate.losses = (awayData.losses || 0) + 1;
-            } else if (awayScore > homeScore) {
-                awayUpdate.wins = (awayData.wins || 0) + 1;
-                awayUpdate.points += 3;
-                homeUpdate.losses = (homeData.losses || 0) + 1;
-            } else {
-                homeUpdate.draws = (homeData.draws || 0) + 1;
-                homeUpdate.points += 1;
-                awayUpdate.draws = (awayData.draws || 0) + 1;
-                awayUpdate.points += 1;
-            }
+                if (homeScore > awayScore) {
+                    homeUpdate.wins = (homeData.wins || 0) + 1;
+                    homeUpdate.points += 3;
+                    awayUpdate.losses = (awayData.losses || 0) + 1;
+                } else if (awayScore > homeScore) {
+                    awayUpdate.wins = (awayData.wins || 0) + 1;
+                    awayUpdate.points += 3;
+                    homeUpdate.losses = (homeData.losses || 0) + 1;
+                } else {
+                    homeUpdate.draws = (homeData.draws || 0) + 1;
+                    homeUpdate.points += 1;
+                    awayUpdate.draws = (awayData.draws || 0) + 1;
+                    awayUpdate.points += 1;
+                }
 
-            homeUpdate.goalDifference = homeUpdate.goalsFor - homeUpdate.goalsAgainst;
-            awayUpdate.goalDifference = awayUpdate.goalsFor - awayUpdate.goalsAgainst;
+                homeUpdate.goalDifference = homeUpdate.goalsFor - homeUpdate.goalsAgainst;
+                awayUpdate.goalDifference = awayUpdate.goalsFor - awayUpdate.goalsAgainst;
 
-            transaction.update(homeTeamRef, homeUpdate);
-            transaction.update(awayTeamRef, awayUpdate);
-        });
+                transaction.update(homeTeamRef, homeUpdate);
+                transaction.update(awayTeamRef, awayUpdate);
+            });
+        }
 
         const homeTeamName = document.getElementById('home-team-select').options[document.getElementById('home-team-select').selectedIndex].text;
         const awayTeamName = document.getElementById('away-team-select').options[document.getElementById('away-team-select').selectedIndex].text;
@@ -706,7 +716,8 @@ async function applyMatchResult() {
             scorers: [],
             assists: [],
             cards: [],
-            createdAt: new Date()
+            createdAt: new Date(),
+            matchType: matchType
         });
 
         showCustomAlert('경기 결과가 성공적으로 반영되었습니다.');
@@ -726,6 +737,7 @@ async function scheduleNewMatch(e) {
     const homeTeamId = document.getElementById('schedule-home-team-select').value;
     const awayTeamId = document.getElementById('schedule-away-team-select').value;
     const matchDate = document.getElementById('schedule-match-date').value;
+    const matchType = document.getElementById('schedule-match-type').value;
 
     if (!homeTeamId || !awayTeamId || !matchDate) {
         showCustomAlert('모든 필드를 채워주세요.');
@@ -758,7 +770,8 @@ async function scheduleNewMatch(e) {
             scorers: [],
             assists: [],
             cards: [],
-            createdAt: new Date()
+            createdAt: new Date(),
+            matchType: matchType
         });
 
         showCustomAlert('경기가 성공적으로 등록되었습니다.');

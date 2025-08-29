@@ -99,6 +99,8 @@ async function renderPlayerRankings() {
 
         matchesSnapshot.forEach(matchDoc => {
             const matchData = matchDoc.data();
+            if (matchData.matchType === 'practice') return; // 연습 경기는 건너뛰기
+
             if (matchData.scorers) {
                 matchData.scorers.forEach(scorer => {
                     if (!goalStats[scorer.playerId]) goalStats[scorer.playerId] = { goals: 0 };
@@ -166,8 +168,13 @@ async function renderRecentMatches() {
             const awayTeamIcon = teamsData.get(match.awayTeamId)?.iconUrl || 'logo.png';
             const card = document.createElement('div');
             card.className = 'match-card';
+
+            const matchTypeBadge = match.matchType === 'practice' 
+                ? `<span class="practice-match-badge">연습</span>` 
+                : '';
+
             card.innerHTML = `
-                <div class="match-date">${match.date}</div>
+                <div class="match-date">${match.date}${matchTypeBadge}</div>
                 <div class="match-teams">
                     <div class="team-display">
                         <img src="${homeTeamIcon}" alt="${match.homeTeamName}" class="match-card-team-icon">

@@ -38,6 +38,7 @@ async function calculatePlayerStats(playerId) {
 
     matchesSnapshot.forEach(matchDoc => {
         const matchData = matchDoc.data();
+        if (matchData.matchType === 'practice') return; // 연습 경기는 건너뛰기
         
         // Calculate goals
         if (matchData.scorers && Array.isArray(matchData.scorers)) {
