@@ -13,6 +13,7 @@ import { initPlayerRankingPage } from "../pages/playerRanking.js";
 import { initMatchReportPage } from "../pages/matchReport.js";
 import { initRecruitPlayerPage } from "../pages/recruitPlayer.js";
 import { initEditSquadPage } from "../pages/editSquad.js";
+import { initSchedulePage } from "../pages/schedule.js";
 
 const protectedRoutes = [
     'mypage.html',
@@ -31,7 +32,7 @@ function updateNav(user) {
 
     if (user) {
         navLinks.innerHTML = `
-            <li><a href="team_ranking.html">팀 순위</a></li>
+            <li><a href="index.html#team-ranking-content">팀 순위</a></li>
             <li><a href="player_ranking.html">개인 순위</a></li>
             <li><a href="schedule.html">경기 일정</a></li>
             <li><a href="mypage.html">마이페이지</a></li>
@@ -50,7 +51,7 @@ function updateNav(user) {
     } else {
         navLinks.innerHTML = `
             <li><a href="login.html">로그인</a></li>
-            <li><a href="team_ranking.html">팀 순위</a></li>
+            <li><a href="index.html#team-ranking-content">팀 순위</a></li>
             <li><a href="player_ranking.html">개인 순위</a></li>
             <li><a href="schedule.html">경기 일정</a></li>
         `;
@@ -80,6 +81,9 @@ function router(user) {
             break;
         case 'player_ranking.html':
             initPlayerRankingPage();
+            break;
+        case 'schedule.html':
+            initSchedulePage();
             break;
         case 'match_report.html':
             initMatchReportPage();
@@ -129,3 +133,4 @@ export function listenAuthState() {
         router(verifiedUser);
     });
 }
+

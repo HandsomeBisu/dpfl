@@ -207,16 +207,27 @@ async function renderSchedule() {
         container.innerHTML = '';
         querySnapshot.forEach(doc => {
             const match = doc.data();
+            const homeTeam = teamsData.get(match.homeTeamId);
+            const awayTeam = teamsData.get(match.awayTeamId);
+
+            const homeTeamIcon = homeTeam?.iconUrl || 'logo.png';
+            const awayTeamIcon = awayTeam?.iconUrl || 'logo.png';
             const matchDate = new Date(match.date);
             const item = document.createElement('div');
             item.className = 'schedule-item';
             item.innerHTML = `
-                <div class="schedule-team">${match.homeTeamName}</div>
+                <div class="schedule-team">
+                    <img src="${homeTeamIcon}" alt="${match.homeTeamName}" class="team-icon-schedule">
+                    <span>${match.homeTeamName}</span>
+                </div>
                 <div class="schedule-time">
                     <strong>${matchDate.toLocaleDateString('ko-KR')}</strong>
                     <span>${matchDate.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
-                <div class="schedule-team">${match.awayTeamName}</div>
+                <div class="schedule-team">
+                    <img src="${awayTeamIcon}" alt="${match.awayTeamName}" class="team-icon-schedule">
+                    <span>${match.awayTeamName}</span>
+                </div>
             `;
             container.appendChild(item);
         });
@@ -235,7 +246,7 @@ function initContentTabs() {
     const contentSections = document.querySelectorAll('.content-section');
     const tabBtns = document.querySelectorAll('.tab-btn');
 
-    tabsContainer.addEventListener('click', async (e) => { // Added async
+    tabsContainer.addEventListener('click', (e) => {
         const clickedBtn = e.target.closest('.tab-btn');
         if (!clickedBtn) return;
 
@@ -254,9 +265,23 @@ function initContentTabs() {
 
         // Call specific init function for the active tab
         if (targetId === 'all-players-content') {
-            await initAllPlayersSection();
+            initAllPlayersSection();
         }
     });
+}
+
+function handleHashChange() {
+    const hash = window.location.hash.substring(1);
+    if (!hash) return;
+
+    const tabBtn = document.querySelector(`.tab-btn[data-target="${hash}"]`);
+    if (tabBtn) {
+        tabBtn.click();
+        const targetElement = document.getElementById(hash);
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
 }
 
 // --- Page Initializer ---
@@ -271,4 +296,7 @@ export async function initHomePage() {
     renderPlayerRankings();
     renderSchedule();
     initAllPlayersSection(); // Call for initial load
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
 }

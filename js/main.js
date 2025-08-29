@@ -15,6 +15,12 @@ function setupMobileNav() {
         hamburger.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
+
+        navLinks.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                navLinks.classList.remove('active');
+            }
+        });
     }
 }
 
