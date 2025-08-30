@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팝업 관리</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>팝업 관리</h1>
+        <form id="popup-form">
+            <div class="form-group">
+                <label for="popup-content">팝업 내용 (Markdown 지원)</label>
+                <textarea id="popup-content" rows="10"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="popup-start-date">노출 시작일</label>
+                <input type="date" id="popup-start-date">
+            </div>
+            <div class="form-group">
+                <label for="popup-end-date">노출 종료일</label>
+                <input type="date" id="popup-end-date">
+            </div>
+            <button type="submit" class="btn">저장</button>
+            <button type="button" id="delete-popup-btn" class="btn btn-danger">삭제</button>
+        </form>
+    </div>
+    <script type="module" src="js/pages/editPopup.js"></script>
+</body>
+</html>

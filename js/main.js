@@ -1,5 +1,7 @@
 import { listenAuthState } from './auth/authState.js';
 import { handleSignup, handleLogin } from './auth/auth.js';
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { db } from "./firebase/config.js";
 
 function getPageName() {
     const path = window.location.pathname;
@@ -51,3 +53,19 @@ document.addEventListener('keydown', function(e) {
         e.preventDefault();
     }
 });
+
+export async function getPopupData() {
+    try {
+        const popupRef = doc(db, 'popups', 'mainPopup');
+        const popupSnap = await getDoc(popupRef);
+
+        if (popupSnap.exists()) {
+            return popupSnap.data();
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting popup data: ", error);
+        return null;
+    }
+}

@@ -1,6 +1,7 @@
 import { collection, query, getDocs, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { db } from "../firebase/config.js";
 import { initAllPlayersSection } from "./allPlayers.js"; // New import
+import { getPopupData } from "../main.js";
 
 // --- Data Loading & Caching ---
 let teamsData = new Map();
@@ -244,6 +245,58 @@ async function renderSchedule() {
     }
 }
 
+async function displayPopup() {
+    if (sessionStorage.getItem('hasSeenPopup')) {
+        return;
+    }
+
+    const popupData = await getPopupData();
+    if (!popupData) return;
+
+    const now = new Date();
+    const startDate = new Date(popupData.startDate);
+    const endDate = new Date(popupData.endDate);
+    endDate.setHours(23, 59, 59, 999); // End of day
+
+    if (now >= startDate && now <= endDate) {
+        const converter = new showdown.Converter();
+        const htmlContent = converter.makeHtml(popupData.content);
+
+        const popupOverlay = document.createElement('div');
+        popupOverlay.className = 'custom-alert-overlay';
+
+        const popupContainer = document.createElement('div');
+        popupContainer.className = 'custom-alert-popup';
+
+        const popupContent = document.createElement('div');
+        popupContent.innerHTML = htmlContent;
+
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '&times;';
+        closeButton.className = 'close-button';
+        
+        const closePopup = () => {
+            popupOverlay.classList.remove('active');
+            popupOverlay.addEventListener('transitionend', () => {
+                popupOverlay.remove();
+            }, { once: true });
+        };
+
+        closeButton.onclick = closePopup;
+
+        popupContainer.appendChild(closeButton);
+        popupContainer.appendChild(popupContent);
+        popupOverlay.appendChild(popupContainer);
+        document.body.appendChild(popupOverlay);
+
+        setTimeout(() => {
+            popupOverlay.classList.add('active');
+        }, 10);
+
+        sessionStorage.setItem('hasSeenPopup', 'true');
+    }
+}
+
 // --- Tab Initialization ---
 
 function initContentTabs() {
@@ -295,7 +348,7 @@ function handleHashChange() {
 
 export async function initHomePage() {
     initContentTabs();
-    await Promise.all([loadAllTeams(), loadAllPlayers()]);
+    await Promise.all([loadAllTeams(), loadAllPlayers(), displayPopup()]);
     
     // Load content for all tabs
     renderRecentMatches();

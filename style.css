@@ -589,8 +589,12 @@ a {
     text-align: center;
     transform: scale(0.9);
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    max-width: 90%;
-    width: 400px;
+    max-width: 80%;
+    width: 600px;
+}
+
+.custom-alert-popup h1 {
+    text-align: center;
 }
 
 .custom-alert-overlay.active .custom-alert-popup {
@@ -616,6 +620,12 @@ a {
     min-width: 80px;
     padding: 0.6rem 1.2rem;
     margin-top: 0;
+}
+
+.close-button {
+    position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer;
+    background: none;
+    border: none;
 }
 
 /* --- Animations --- */
