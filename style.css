@@ -601,11 +601,13 @@ a {
     transform: scale(1);
 }
 
-.custom-alert-popup p {
+.form-box p {
     margin: 0 0 1.5rem 0;
     font-size: 1.1rem;
     color: #333;
     line-height: 1.6;
+    word-break: keep-all;
+    white-space: normal;
 }
 
 .custom-alert-popup .custom-alert-buttons {
