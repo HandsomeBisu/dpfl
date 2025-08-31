@@ -1,4 +1,4 @@
-import { collection, query, orderBy, onSnapshot, addDoc, deleteDoc, doc, getDoc, updateDoc, where, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, query, orderBy, onSnapshot, addDoc, deleteDoc, doc, getDoc, updateDoc, where, getDocs, runTransaction, deleteField } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { db } from "../firebase/config.js";
 import { showCustomAlert, showCustomConfirm } from "../ui/alerts.js";
 
@@ -300,6 +300,7 @@ async function openMatchEditModal(matchId) {
     }
 
     const match = matchSnap.data();
+    const matchPlayers = allPlayers.filter(p => p.teamId === match.homeTeamId || p.teamId === match.awayTeamId);
 
     document.getElementById('editMatchId').value = matchId;
     document.getElementById('editMatchDate').value = match.date;
@@ -308,188 +309,124 @@ async function openMatchEditModal(matchId) {
     document.getElementById('editAwayTeamName').textContent = match.awayTeamName;
     document.getElementById('editHomeScore').value = match.homeScore;
     document.getElementById('editAwayScore').value = match.awayScore;
+    document.getElementById('editMatchSummary').value = match.report_summary || '';
 
-    const scorersContainer = document.getElementById('scorers-management-section');
-    scorersContainer.innerHTML = '';
-    if (match.scorers && Array.isArray(match.scorers)) {
-        match.scorers.forEach(scorer => addScorerRow(scorer.playerId, scorer.goals, scorer.timestamp));
-    }
-
-    const assistsContainer = document.getElementById('assists-management-section');
-    assistsContainer.innerHTML = '';
-    if (match.assists && Array.isArray(match.assists)) {
-        match.assists.forEach(assist => addAssistRow(assist.playerId, assist.timestamp));
-    }
-
-    const cardsContainer = document.getElementById('cards-management-section');
-    cardsContainer.innerHTML = '';
-    if (match.cards && Array.isArray(match.cards)) {
-        match.cards.forEach(card => addCardRow(card.playerId, card.cardType, card.timestamp));
-    }
-
+    // Populate player dropdowns
+    const playerSelect = document.getElementById('event-player-select');
     const mvpSelect = document.getElementById('editMatchMVP');
-    const summaryText = document.getElementById('editMatchSummary');
-    summaryText.value = match.report_summary || '';
-
-    const homePlayers = allPlayers.filter(p => p.teamId === match.homeTeamId);
-    const awayPlayers = allPlayers.filter(p => p.teamId === match.awayTeamId);
-    const matchPlayers = [...homePlayers, ...awayPlayers];
-
+    playerSelect.innerHTML = '<option value="">선수 선택</option>';
     mvpSelect.innerHTML = '<option value="">MVP 선택</option>';
+
     matchPlayers.forEach(player => {
         const option = document.createElement('option');
         option.value = player.id;
         option.textContent = `${player.name} (${player.teamName})`;
-        if (match.report_mvp === player.id) {
-            option.selected = true;
-        }
+        playerSelect.appendChild(option.cloneNode(true));
         mvpSelect.appendChild(option);
     });
+
+    if (match.report_mvp) {
+        mvpSelect.value = match.report_mvp;
+    }
+
+    // Render existing events
+    let events = [];
+    if (match.events && Array.isArray(match.events)) {
+        events = match.events;
+    } else {
+        // Compatibility for old data structure
+        if (match.scorers) {
+            match.scorers.forEach(s => events.push({ type: 'goal', goals: s.goals, ...s }));
+        }
+        if (match.assists) {
+            match.assists.forEach(a => events.push({ type: 'assist', ...a }));
+        }
+        if (match.cards) {
+            match.cards.forEach(c => events.push({ type: 'card', ...c }));
+        }
+        // A simple sort for legacy data, though order is not guaranteed
+        events.sort((a, b) => (a.timestamp || '').localeCompare(b.timestamp || ''));
+    }
+    
+    renderEventsList(events);
 
     modal.style.display = 'flex';
 }
 
-function addScorerRow(selectedPlayerId = '', goals = 1, timestamp = '') {
-    const scorersContainer = document.getElementById('scorers-management-section');
-    const scorerDiv = document.createElement('div');
-    scorerDiv.className = 'scorer-row';
-    scorerDiv.style.display = 'flex';
-    scorerDiv.style.gap = '1rem';
-    scorerDiv.style.marginBottom = '0.5rem';
-    scorerDiv.style.alignItems = 'center';
+function renderEventItem(event) {
+    const player = allPlayers.find(p => p.id === event.playerId);
+    if (!player) return null;
 
-    const playerSelect = document.createElement('select');
-    playerSelect.className = 'scorer-player-select';
-    playerSelect.style.flex = '1';
-    playerSelect.required = true;
-    playerSelect.innerHTML = '<option value="">선수 선택</option>';
-    allPlayers.forEach(player => {
-        const option = document.createElement('option');
-        option.value = player.id;
-        option.textContent = `${player.name} (${player.teamName || '무소속'})`;
-        if (player.id === selectedPlayerId) option.selected = true;
-        playerSelect.appendChild(option);
-    });
+    const eventDiv = document.createElement('div');
+    eventDiv.className = 'registered-item event-item';
+    eventDiv.dataset.event = JSON.stringify(event);
 
-    const goalsInput = document.createElement('input');
-    goalsInput.type = 'number';
-    goalsInput.className = 'scorer-goals-input';
-    goalsInput.value = goals;
-    goalsInput.min = 1;
-    goalsInput.required = true;
-    goalsInput.style.width = '60px';
+    let eventText = '';
+    switch(event.type) {
+        case 'goal': eventText = `[득점] ${player.name} (${event.goals}골)`; break;
+        case 'assist': eventText = `[어시스트] ${player.name}`; break;
+        case 'card': eventText = `[${event.cardType === 'red' ? '퇴장' : '경고'}] ${player.name}`; break;
+        case 'sub_in': eventText = `[교체 IN] ${player.name}`; break;
+        case 'sub_out': eventText = `[교체 OUT] ${player.name}`; break;
+    }
 
-    const timeInput = document.createElement('input');
-    timeInput.type = 'text';
-    timeInput.className = 'event-time-input';
-    timeInput.placeholder = "시간 (예: 전반 10:30)";
-    timeInput.value = timestamp;
-    timeInput.style.width = '120px';
-
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.textContent = '삭제';
-    removeBtn.className = 'btn-small btn-danger';
-    removeBtn.onclick = () => scorerDiv.remove();
-
-    scorerDiv.appendChild(playerSelect);
-    scorerDiv.appendChild(goalsInput);
-    scorerDiv.appendChild(timeInput);
-    scorerDiv.appendChild(removeBtn);
-    scorersContainer.appendChild(scorerDiv);
-}
-
-function addAssistRow(selectedPlayerId = '', timestamp = '') {
-    const assistsContainer = document.getElementById('assists-management-section');
-    const assistDiv = document.createElement('div');
-    assistDiv.className = 'assist-row';
-    assistDiv.style.display = 'flex';
-    assistDiv.style.gap = '1rem';
-    assistDiv.style.marginBottom = '0.5rem';
-    assistDiv.style.alignItems = 'center';
-
-    const playerSelect = document.createElement('select');
-    playerSelect.className = 'assist-player-select';
-    playerSelect.style.flex = '1';
-    playerSelect.required = true;
-    playerSelect.innerHTML = '<option value="">선수 선택</option>';
-    allPlayers.forEach(player => {
-        const option = document.createElement('option');
-        option.value = player.id;
-        option.textContent = `${player.name} (${player.teamName || '무소속'})`;
-        if (player.id === selectedPlayerId) option.selected = true;
-        playerSelect.appendChild(option);
-    });
-
-    const timeInput = document.createElement('input');
-    timeInput.type = 'text';
-    timeInput.className = 'event-time-input';
-    timeInput.placeholder = "시간 (예: 후반 05:00)";
-    timeInput.value = timestamp;
-    timeInput.style.width = '120px';
-
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.textContent = '삭제';
-    removeBtn.className = 'btn-small btn-danger';
-    removeBtn.onclick = () => assistDiv.remove();
-
-    assistDiv.appendChild(playerSelect);
-    assistDiv.appendChild(timeInput);
-    assistDiv.appendChild(removeBtn);
-    assistsContainer.appendChild(assistDiv);
-}
-
-function addCardRow(selectedPlayerId = '', cardType = 'yellow', timestamp = '') {
-    const cardsContainer = document.getElementById('cards-management-section');
-    const cardDiv = document.createElement('div');
-    cardDiv.className = 'card-row';
-    cardDiv.style.display = 'flex';
-    cardDiv.style.gap = '1rem';
-    cardDiv.style.marginBottom = '0.5rem';
-    cardDiv.style.alignItems = 'center';
-
-    const playerSelect = document.createElement('select');
-    playerSelect.className = 'card-player-select';
-    playerSelect.style.flex = '1';
-    playerSelect.required = true;
-    playerSelect.innerHTML = '<option value="">선수 선택</option>';
-    allPlayers.forEach(player => {
-        const option = document.createElement('option');
-        option.value = player.id;
-        option.textContent = `${player.name} (${player.teamName || '무소속'})`;
-        if (player.id === selectedPlayerId) option.selected = true;
-        playerSelect.appendChild(option);
-    });
-
-    const cardTypeSelect = document.createElement('select');
-    cardTypeSelect.className = 'card-type-select';
-    cardTypeSelect.innerHTML = `
-        <option value="yellow" ${cardType === 'yellow' ? 'selected' : ''}>경고</option>
-        <option value="red" ${cardType === 'red' ? 'selected' : ''}>퇴장</option>
+    eventDiv.innerHTML = `
+        <div class="item-info">
+            <span>${eventText}</span>
+            <span style="color: #888; margin-left: 1rem;">${event.timestamp || ''}</span>
+        </div>
+        <div class="item-actions">
+            <button type="button" class="btn-small btn-danger delete-event-btn">삭제</button>
+        </div>
     `;
+    return eventDiv;
+}
 
-    const timeInput = document.createElement('input');
-    timeInput.type = 'text';
-    timeInput.className = 'event-time-input';
-    timeInput.placeholder = "시간 (예: 전반 20:15)";
-    timeInput.value = timestamp;
-    timeInput.style.width = '120px';
+function renderEventsList(events) {
+    const container = document.getElementById('events-list');
+    container.innerHTML = '';
+    events.forEach(event => {
+        const item = renderEventItem(event);
+        if (item) container.appendChild(item);
+    });
+}
 
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.textContent = '삭제';
-    removeBtn.className = 'btn-small btn-danger';
-    removeBtn.onclick = () => cardDiv.remove();
+async function saveMatchChanges(e) {
+    e.preventDefault();
+    const matchId = document.getElementById('editMatchId').value;
 
-    cardDiv.appendChild(playerSelect);
-    cardDiv.appendChild(cardTypeSelect);
-    cardDiv.appendChild(timeInput);
-    cardDiv.appendChild(removeBtn);
-    cardsContainer.appendChild(cardDiv);
+    const newEvents = [];
+    document.querySelectorAll('#events-list .event-item').forEach(item => {
+        newEvents.push(JSON.parse(item.dataset.event));
+    });
+
+    const updatedData = {
+        date: document.getElementById('editMatchDate').value,
+        matchType: document.getElementById('editMatchType').value,
+        homeScore: parseInt(document.getElementById('editHomeScore').value, 10),
+        awayScore: parseInt(document.getElementById('editAwayScore').value, 10),
+        report_mvp: document.getElementById('editMatchMVP').value,
+        report_summary: document.getElementById('editMatchSummary').value,
+        events: newEvents,
+        // Delete old fields for data migration
+        scorers: deleteField(),
+        assists: deleteField(),
+        cards: deleteField()
+    };
+
+    try {
+        await updateDoc(doc(db, 'matches', matchId), updatedData);
+        showCustomAlert('경기 정보가 업데이트되었습니다.');
+        document.getElementById('adminMatchEditModal').style.display = 'none';
+    } catch (error) {
+        console.error("Error updating match:", error);
+        showCustomAlert(`업데이트 중 오류가 발생했습니다: ${error.message}`);
+    }
 }
 
 async function deleteMatch(matchId) {
+    // This function might need adjustments if it relies on scorers/assists/cards fields
+    // For now, assuming it works mostly with scores which is fine.
     const confirmed = await showCustomConfirm('정말로 이 경기를 삭제하시겠습니까? 팀의 통계가 복구됩니다.');
     if (!confirmed) return;
 
@@ -543,7 +480,6 @@ async function deleteMatch(matchId) {
                         awayUpdate.points -= 1;
                     }
 
-                    // Ensure points do not go below zero
                     if (homeUpdate.points < 0) homeUpdate.points = 0;
                     if (awayUpdate.points < 0) awayUpdate.points = 0;
 
@@ -563,67 +499,6 @@ async function deleteMatch(matchId) {
     } catch (error) {
         console.error("Error deleting match: ", error);
         showCustomAlert(`경기 삭제 실패: ${error.message}`);
-    }
-}
-
-async function saveMatchChanges(e) {
-    e.preventDefault();
-    const matchId = document.getElementById('editMatchId').value;
-    
-    // Note: Changing matchType between 'real' and 'practice' after a match is completed
-    // may lead to inconsistent team statistics. This functionality does not currently
-    // recalculate team stats based on this change.
-    const updatedData = {
-        date: document.getElementById('editMatchDate').value,
-        matchType: document.getElementById('editMatchType').value,
-        homeScore: parseInt(document.getElementById('editHomeScore').value, 10),
-        awayScore: parseInt(document.getElementById('editAwayScore').value, 10),
-        report_mvp: document.getElementById('editMatchMVP').value,
-        report_summary: document.getElementById('editMatchSummary').value,
-    };
-
-    const newScorers = [];
-    document.querySelectorAll('#scorers-management-section .scorer-row').forEach(row => {
-        const playerId = row.querySelector('.scorer-player-select').value;
-        const goals = parseInt(row.querySelector('.scorer-goals-input').value, 10);
-        const timestamp = row.querySelector('.event-time-input').value;
-        if (playerId && !isNaN(goals) && goals > 0) {
-            const player = allPlayers.find(p => p.id === playerId);
-            if(player) newScorers.push({ playerId, playerName: player.name, teamId: player.teamId, photoURL: player.photoURL || null, goals, timestamp });
-        }
-    });
-    updatedData.scorers = newScorers;
-
-    const newAssists = [];
-    document.querySelectorAll('#assists-management-section .assist-row').forEach(row => {
-        const playerId = row.querySelector('.assist-player-select').value;
-        const timestamp = row.querySelector('.event-time-input').value;
-        if (playerId) {
-            const player = allPlayers.find(p => p.id === playerId);
-            if(player) newAssists.push({ playerId, playerName: player.name, teamId: player.teamId, photoURL: player.photoURL || null, timestamp });
-        }
-    });
-    updatedData.assists = newAssists;
-
-    const newCards = [];
-    document.querySelectorAll('#cards-management-section .card-row').forEach(row => {
-        const playerId = row.querySelector('.card-player-select').value;
-        const cardType = row.querySelector('.card-type-select').value;
-        const timestamp = row.querySelector('.event-time-input').value;
-        if (playerId) {
-            const player = allPlayers.find(p => p.id === playerId);
-            if(player) newCards.push({ playerId, playerName: player.name, teamId: player.teamId, photoURL: player.photoURL || null, cardType, timestamp });
-        }
-    });
-    updatedData.cards = newCards;
-
-    try {
-        await updateDoc(doc(db, 'matches', matchId), updatedData);
-        showCustomAlert('경기 정보가 업데이트되었습니다.');
-        document.getElementById('adminMatchEditModal').style.display = 'none';
-    } catch (error) {
-        console.error("Error updating match:", error);
-        showCustomAlert(`업데이트 중 오류가 발생했습니다: ${error.message}`);
     }
 }
 
@@ -713,9 +588,7 @@ async function applyMatchResult() {
             awayTeamName: awayTeamName,
             awayScore: awayScore,
             status: 'completed',
-            scorers: [],
-            assists: [],
-            cards: [],
+            events: [], // Start with empty new events array
             createdAt: new Date(),
             matchType: matchType
         });
@@ -767,9 +640,7 @@ async function scheduleNewMatch(e) {
             homeScore: null,
             awayScore: null,
             status: 'scheduled',
-            scorers: [],
-            assists: [],
-            cards: [],
+            events: [], // Start with empty new events array
             createdAt: new Date(),
             matchType: matchType
         });
@@ -817,11 +688,59 @@ function setupAdminEventListeners() {
     document.getElementById('adminEditTeamForm')?.addEventListener('submit', saveTeamChanges);
     document.getElementById('adminEditMatchForm')?.addEventListener('submit', saveMatchChanges);
     document.getElementById('apply-result-btn')?.addEventListener('click', applyMatchResult);
-    document.getElementById('add-scorer-btn')?.addEventListener('click', () => addScorerRow());
-    document.getElementById('add-assist-btn')?.addEventListener('click', () => addAssistRow());
-    document.getElementById('add-card-btn')?.addEventListener('click', () => addCardRow());
     document.getElementById('schedule-match-form')?.addEventListener('submit', scheduleNewMatch);
+
+    // New event listeners for the match editor
+    document.getElementById('event-type-select')?.addEventListener('change', e => {
+        const cardGroup = document.getElementById('event-card-type-group');
+        cardGroup.style.display = e.target.value === 'card' ? 'block' : 'none';
+    });
+
+    document.getElementById('add-event-btn')?.addEventListener('click', () => {
+        const type = document.getElementById('event-type-select').value;
+        const playerId = document.getElementById('event-player-select').value;
+        const timestamp = document.getElementById('event-time-input').value;
+        
+        if (!playerId) {
+            showCustomAlert('선수를 선택해주세요.');
+            return;
+        }
+
+        const player = allPlayers.find(p => p.id === playerId);
+        if (!player) {
+            showCustomAlert('유효하지 않은 선수입니다.');
+            return;
+        }
+
+        const newEvent = {
+            type,
+            playerId,
+            playerName: player.name, // Denormalize for easier display
+            teamId: player.teamId,
+            photoURL: player.photoURL || null,
+            timestamp
+        };
+
+        if (type === 'goal') {
+            newEvent.goals = 1; // Default to 1 goal per event
+        }
+        if (type === 'card') {
+            newEvent.cardType = document.getElementById('event-card-type-select').value;
+        }
+
+        const item = renderEventItem(newEvent);
+        if (item) {
+            document.getElementById('events-list').appendChild(item);
+        }
+    });
+
+    document.getElementById('events-list')?.addEventListener('click', e => {
+        if (e.target.matches('.delete-event-btn')) {
+            e.target.closest('.event-item').remove();
+        }
+    });
 }
+
 
 // --- Page Initializer ---
 export function initAdminPage() {

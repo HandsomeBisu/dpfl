@@ -100,19 +100,33 @@ async function renderPlayerRankings() {
 
         matchesSnapshot.forEach(matchDoc => {
             const matchData = matchDoc.data();
-            if (matchData.matchType === 'practice') return; // 연습 경기는 건너뛰기
+            if (matchData.matchType === 'practice') return; // Skip practice matches
 
-            if (matchData.scorers) {
-                matchData.scorers.forEach(scorer => {
-                    if (!goalStats[scorer.playerId]) goalStats[scorer.playerId] = { goals: 0 };
-                    goalStats[scorer.playerId].goals += scorer.goals;
+            if (matchData.events && Array.isArray(matchData.events)) {
+                // New data structure: process events array
+                matchData.events.forEach(event => {
+                    if (event.type === 'goal') {
+                        if (!goalStats[event.playerId]) goalStats[event.playerId] = { goals: 0 };
+                        goalStats[event.playerId].goals += event.goals || 1;
+                    } else if (event.type === 'assist') {
+                        if (!assistStats[event.playerId]) assistStats[event.playerId] = { assists: 0 };
+                        assistStats[event.playerId].assists += 1;
+                    }
                 });
-            }
-            if (matchData.assists) {
-                matchData.assists.forEach(assist => {
-                    if (!assistStats[assist.playerId]) assistStats[assist.playerId] = { assists: 0 };
-                    assistStats[assist.playerId].assists += 1;
-                });
+            } else {
+                // Legacy data structure: process scorers/assists arrays
+                if (matchData.scorers) {
+                    matchData.scorers.forEach(scorer => {
+                        if (!goalStats[scorer.playerId]) goalStats[scorer.playerId] = { goals: 0 };
+                        goalStats[scorer.playerId].goals += scorer.goals;
+                    });
+                }
+                if (matchData.assists) {
+                    matchData.assists.forEach(assist => {
+                        if (!assistStats[assist.playerId]) assistStats[assist.playerId] = { assists: 0 };
+                        assistStats[assist.playerId].assists += 1;
+                    });
+                }
             }
         });
 
@@ -127,11 +141,18 @@ async function renderPlayerRankings() {
             ranked.forEach(([playerId, data], index) => {
                 if (index > 0 && data[key] < ranked[index - 1][1][key]) rank = index + 1;
                 const playerInfo = allPlayers[playerId] || { name: '알 수 없음', teamName: '-' };
+                const playerPhotoUrl = playerInfo.photoURL || 'logo.png';
+                const teamIconUrl = playerInfo.teamId ? teamsData.get(playerInfo.teamId)?.iconUrl || 'logo.png' : 'logo.png';
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${rank}</td>
-                    <td>${playerInfo.name}</td>
-                    <td>${playerInfo.teamName || '무소속'}</td>
+                    <td class="player-cell">
+                        ${playerInfo.name}
+                    </td>
+                    <td class="team-cell">
+                        ${playerInfo.teamName || '무소속'}
+                    </td>
                     <td>${data[key]}</td>
                 `;
                 tbody.appendChild(row);

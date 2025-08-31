@@ -10,7 +10,16 @@ async function fetchAllPlayers() {
     return players;
 }
 
-function renderRankingTable(tbodyId, rankedData, statKey) {
+async function fetchAllTeams() {
+    const teams = new Map();
+    const teamsSnapshot = await getDocs(collection(db, "teams"));
+    teamsSnapshot.forEach(doc => {
+        teams.set(doc.id, doc.data());
+    });
+    return teams;
+}
+
+function renderRankingTable(tbodyId, rankedData, statKey, teamsMap) {
     const rankingBody = document.getElementById(tbodyId);
     if (!rankingBody) return;
 
@@ -28,11 +37,16 @@ function renderRankingTable(tbodyId, rankedData, statKey) {
             rank = index + 1;
         }
 
+
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${rank}</td>
-            <td>${player.name || '알 수 없음'}</td>
-            <td>${player.teamName || '무소속'}</td>
+            <td class="player-cell">
+                ${player.name || '알 수 없음'}
+            </td>
+            <td class="team-cell">
+                ${player.teamName || '무소속'}
+            </td>
             <td>${player[statKey]}</td>
         `;
         rankingBody.appendChild(row);
@@ -47,7 +61,8 @@ export async function initPlayerRankingPage() {
     if (assistRankingBody) assistRankingBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">순위를 불러오는 중...</td></tr>';
 
     try {
-        const allPlayers = await fetchAllPlayers();
+        const [allPlayers, allTeams] = await Promise.all([fetchAllPlayers(), fetchAllTeams()]);
+        
         const goalStats = {};
         const assistStats = {};
 
@@ -55,40 +70,50 @@ export async function initPlayerRankingPage() {
         
         matchesSnapshot.forEach(matchDoc => {
             const matchData = matchDoc.data();
-            if (matchData.matchType === 'practice') return; // 연습 경기는 건너뛰기
+            if (matchData.matchType === 'practice') return; // Skip practice matches
 
-            // Aggregate goals
-            if (matchData.scorers && Array.isArray(matchData.scorers)) {
-                matchData.scorers.forEach(scorer => {
-                    if (!goalStats[scorer.playerId]) {
-                        goalStats[scorer.playerId] = { 
-                            goals: 0,
-                            ...allPlayers[scorer.playerId]
-                        };
+            if (matchData.events && Array.isArray(matchData.events)) {
+                matchData.events.forEach(event => {
+                    if (!allPlayers[event.playerId]) return; // Skip if player data is missing
+                    if (event.type === 'goal') {
+                        if (!goalStats[event.playerId]) {
+                            goalStats[event.playerId] = { goals: 0, ...allPlayers[event.playerId] };
+                        }
+                        goalStats[event.playerId].goals += event.goals || 1;
+                    } else if (event.type === 'assist') {
+                        if (!assistStats[event.playerId]) {
+                            assistStats[event.playerId] = { assists: 0, ...allPlayers[event.playerId] };
+                        }
+                        assistStats[event.playerId].assists += 1;
                     }
-                    goalStats[scorer.playerId].goals += scorer.goals;
                 });
-            }
-
-            // Aggregate assists
-            if (matchData.assists && Array.isArray(matchData.assists)) {
-                matchData.assists.forEach(assist => {
-                    if (!assistStats[assist.playerId]) {
-                        assistStats[assist.playerId] = { 
-                            assists: 0,
-                            ...allPlayers[assist.playerId]
-                        };
-                    }
-                    assistStats[assist.playerId].assists += 1; // Each entry is one assist
-                });
+            } else {
+                if (matchData.scorers && Array.isArray(matchData.scorers)) {
+                    matchData.scorers.forEach(scorer => {
+                        if (!allPlayers[scorer.playerId]) return;
+                        if (!goalStats[scorer.playerId]) {
+                            goalStats[scorer.playerId] = { goals: 0, ...allPlayers[scorer.playerId] };
+                        }
+                        goalStats[scorer.playerId].goals += scorer.goals;
+                    });
+                }
+                if (matchData.assists && Array.isArray(matchData.assists)) {
+                    matchData.assists.forEach(assist => {
+                        if (!allPlayers[assist.playerId]) return;
+                        if (!assistStats[assist.playerId]) {
+                            assistStats[assist.playerId] = { assists: 0, ...allPlayers[assist.playerId] };
+                        }
+                        assistStats[assist.playerId].assists += 1;
+                    });
+                }
             }
         });
 
         const rankedScorers = Object.values(goalStats).sort((a, b) => b.goals - a.goals);
         const rankedAssisters = Object.values(assistStats).sort((a, b) => b.assists - a.assists);
 
-        renderRankingTable('player-ranking-body', rankedScorers, 'goals');
-        renderRankingTable('assist-ranking-body', rankedAssisters, 'assists');
+        renderRankingTable('player-ranking-body', rankedScorers, 'goals', allTeams);
+        renderRankingTable('assist-ranking-body', rankedAssisters, 'assists', allTeams);
 
     } catch (error) {
         console.error("Error loading player rankings: ", error);

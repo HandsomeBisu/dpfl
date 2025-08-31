@@ -33,12 +33,14 @@
                 <button class="tab-btn" data-target="scorers-content">득점 기록</button>
                 <button class="tab-btn" data-target="assists-content">어시스트 기록</button>
                 <button class="tab-btn" data-target="cards-content">경고/퇴장</button>
+                <button class="tab-btn" data-target="subs-content">교체 기록</button>
                 <button class="tab-btn" data-target="mvp-content">MVP</button>
             </div>
 
             <div id="content-sections">
                 <section id="summary-content" class="content-section active">
-                    <p id="report-summary-text" class="report-text-block"></p>
+                    <div id="report-events-list" class="report-list-block"></div>
+                    <p id="report-summary-text" class="report-text-block" style="margin-top: 2rem;"></p>
                 </section>
 
                 <section id="scorers-content" class="content-section">
@@ -51,6 +53,10 @@
 
                 <section id="cards-content" class="content-section">
                     <div id="report-cards-list" class="report-list-block"></div>
+                </section>
+
+                <section id="subs-content" class="content-section">
+                    <div id="report-subs-list" class="report-list-block"></div>
                 </section>
 
                 <section id="mvp-content" class="content-section">
